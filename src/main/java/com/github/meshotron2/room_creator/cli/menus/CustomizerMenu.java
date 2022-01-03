@@ -43,6 +43,8 @@ public class CustomizerMenu extends Menu {
                             for (int z2 = 0; z2 <= z; z2++)
                                 if (dist(x, x2, y, y2, z, z2) <= sphere.get(3))
                                     room.writeNode(n, x2, y2, z2); // nodes[x2][y2][z2] = n;
+                                else
+                                    room.writeNode(' ', x2, y2, z2);
                         }
                     }
                     room.endWrite();
@@ -57,9 +59,9 @@ public class CustomizerMenu extends Menu {
     }
 
     private double dist(int x1, int x2, int y1, int y2, int z1, int z2) {
-        int xDist = (x1 - x2) * (x1 - x2);
-        int yDist = (y1 - y2) * (y1 - y2);
-        int zDist = (z1 - z2) * (z1 - z2);
+        final int xDist = (x1 - x2) * (x1 - x2);
+        final int yDist = (y1 - y2) * (y1 - y2);
+        final int zDist = (z1 - z2) * (z1 - z2);
 
         return Math.sqrt(xDist + yDist + zDist);
     }

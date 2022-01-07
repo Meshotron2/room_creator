@@ -3,3 +3,4 @@
 *.dwm
 /target
 /.idea/
+gui/widgets/__pycache__/

@@ -1,5 +1,4 @@
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QSizePolicy
 
 
@@ -16,17 +15,24 @@ class MainWidget(QtWidgets.QWidget):
         self.btn_select_file = QtWidgets.QPushButton("Select file from disk")
         self.btn_start_wizard = QtWidgets.QPushButton("Start file creator wizard")
 
-        self.layout.addItem(QtWidgets.QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding), 2, 1, Qt.AlignTop)
-        self.layout.addItem(QtWidgets.QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum), 1, 2, Qt.AlignLeft)
-        self.layout.addItem(QtWidgets.QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum), 3, 2, Qt.AlignRight)
-        self.layout.addItem(QtWidgets.QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding), 2, 3, Qt.AlignBottom)
+        # self.layout.addItem(QtWidgets.QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Expanding), 0, 1, 1, 1)
+        self.layout.addItem(QtWidgets.QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum), 1, 0, 1, 1)
+        self.layout.addItem(QtWidgets.QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum), 1, 2, 1, 1)
+        self.layout.addItem(QtWidgets.QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding), 2, 1, 1, 1)
 
         self.content_layout = QtWidgets.QVBoxLayout()
-        self.layout.addLayout(self.content_layout, 2, 2)
+        self.layout.addLayout(self.content_layout, 1, 1)
 
+        self.content_layout.addItem(QtWidgets.QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
         self.content_layout.addWidget(self.title)
+        self.content_layout.addItem(QtWidgets.QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
         self.content_layout.addWidget(self.btn_select_file)
+        self.content_layout.addItem(QtWidgets.QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
         self.content_layout.addWidget(QtWidgets.QLabel("OR", alignment=QtCore.Qt.AlignCenter))
+        self.content_layout.addItem(QtWidgets.QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
         self.content_layout.addWidget(self.btn_start_wizard)
 
         self.btn_select_file.clicked.connect(self.select_file)

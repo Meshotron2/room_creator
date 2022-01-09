@@ -1,6 +1,8 @@
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtWidgets import QSizePolicy
 
+from widgets.creation_wizard import WizardWidget
+
 
 class MainWidget(QtWidgets.QWidget):
     def __init__(self):
@@ -36,9 +38,15 @@ class MainWidget(QtWidgets.QWidget):
         self.content_layout.addWidget(self.btn_start_wizard)
 
         self.btn_select_file.clicked.connect(self.select_file)
+        self.btn_start_wizard.clicked.connect(self.open_wizard)
 
     @QtCore.Slot()
     def select_file(self):
         filename, name_filter = QtWidgets.QFileDialog.getOpenFileName(parent=self, caption='Select file to convert',
                                                                       dir='.')
         self.text.setText(filename)
+
+    @QtCore.Slot()
+    def open_wizard(self):
+        self.open_window = WizardWidget()
+        self.open_window.show()

@@ -1,33 +1,7 @@
 from PySide6 import QtWidgets, QtCore
 
-
-class ElementCaseWidget(QtWidgets.QWidget):
-    def __init__(self, box_id):
-        super().__init__()
-
-        self.layout = QtWidgets.QVBoxLayout(self)
-        self.selection_layout = QtWidgets.QHBoxLayout(self)
-
-        self.layout.addLayout(self.selection_layout)
-
-        self.label = QtWidgets.QLabel(box_id)
-        self.text_box = QtWidgets.QComboBox()
-        self.text_box.addItems(["test_1", "text_2"])
-
-        self.selection_layout.addWidget(self.label)
-        self.selection_layout.addWidget(self.text_box)
-
-class TextEditWLabel(QtWidgets.QWidget):
-    def __init__(self, label):
-        super().__init__()
-
-        self.layout = QtWidgets.QHBoxLayout(self)
-
-        self.label = QtWidgets.QLabel(label)
-        self.text_box = QtWidgets.QLineEdit()
-
-        self.layout.addWidget(self.label)
-        self.layout.addWidget(self.text_box)
+from widgets.creation_wizard_utils.element_case_widget import ElementCaseWidget
+from widgets.creation_wizard_utils.text_edit_w_label import TextEditWLabel
 
 
 class WizardWidget(QtWidgets.QWidget):

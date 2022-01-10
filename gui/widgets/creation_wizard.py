@@ -1,6 +1,22 @@
 from PySide6 import QtWidgets, QtCore
 
 
+class ElementCaseWidget(QtWidgets.QWidget):
+    def __init__(self, box_id):
+        super().__init__()
+
+        self.layout = QtWidgets.QVBoxLayout(self)
+        self.selection_layout = QtWidgets.QHBoxLayout(self)
+
+        self.layout.addLayout(self.selection_layout)
+
+        self.label = QtWidgets.QLabel(box_id)
+        self.text_box = QtWidgets.QComboBox()
+        self.text_box.addItems(["test_1", "text_2"])
+
+        self.selection_layout.addWidget(self.label)
+        self.selection_layout.addWidget(self.text_box)
+
 class TextEditWLabel(QtWidgets.QWidget):
     def __init__(self, label):
         super().__init__()
@@ -22,6 +38,7 @@ class WizardWidget(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout(self)
         self.title_layout = QtWidgets.QVBoxLayout(self)
         self.header_layout = QtWidgets.QHBoxLayout(self)
+        self.customizer_layout = QtWidgets.QVBoxLayout(self)
 
         # title_layout
         self.title = QtWidgets.QLabel("Room creation wizard", alignment=QtCore.Qt.AlignCenter)
@@ -47,6 +64,10 @@ class WizardWidget(QtWidgets.QWidget):
         self.header_layout.addLayout(self.h_left)
         self.header_layout.addLayout(self.h_right)
 
+        # customizer_layout
+        self.customizer_layout.addWidget(ElementCaseWidget("1234"))
+
         # Mount layouts on top of layouts
         self.layout.addLayout(self.title_layout)
         self.layout.addLayout(self.header_layout)
+        self.layout.addLayout(self.customizer_layout)

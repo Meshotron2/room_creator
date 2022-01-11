@@ -40,6 +40,7 @@ class ElementCaseWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def update(self):
+        self.right.widget()
         for w in self.r_widgets:
             self.right.removeWidget(w)
             del w

@@ -1,4 +1,5 @@
 from PySide6 import QtWidgets, QtCore
+from PySide6.QtCore import Qt
 
 from widgets.creation_wizard_utils.element_case_widget import ElementCaseWidget
 from widgets.creation_wizard_utils.text_edit_w_label import TextEditWLabel
@@ -40,11 +41,26 @@ class WizardWidget(QtWidgets.QWidget):
         self.header_layout.addLayout(self.h_right)
 
         # customizer_layout
-        self.customizer_layout.addWidget(ElementCaseWidget("1234"))
+        # self.scroll_w = QtWidgets.QScrollBar(self)
+        # self.customizer_layout.addWidget(self.scroll_w)
+        self.scroll = QtWidgets.QScrollArea()
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setWidgetResizable(True)
+
+        w = QtWidgets.QWidget()
+        w.setLayout(self.customizer_layout)
+        self.scroll.setWidget(w)
+
+        self.shapes = []
+
+        # self.add_shape()
 
         # btn_layout
         self.add_shape = QtWidgets.QPushButton("Add shape")
         self.create_room = QtWidgets.QPushButton("Create room")
+
+        self.add_shape.clicked.connect(self.add_shape_action)
 
         self.btn_layout.addWidget(self.add_shape)
         self.btn_layout.addWidget(self.create_room)
@@ -52,5 +68,12 @@ class WizardWidget(QtWidgets.QWidget):
         # Mount layouts on top of layouts
         self.layout.addLayout(self.title_layout)
         self.layout.addLayout(self.header_layout)
-        self.layout.addLayout(self.customizer_layout)
+        # self.layout.addLayout(self.customizer_layout)
+        self.layout.addWidget(self.scroll)
         self.layout.addLayout(self.btn_layout)
+
+    @QtCore.Slot()
+    def add_shape_action(self):
+        widget = ElementCaseWidget(str(len(self.shapes)))
+        self.shapes.append(widget)
+        self.customizer_layout.addWidget(widget)

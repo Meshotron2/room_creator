@@ -91,13 +91,11 @@ class WizardWidget(QtWidgets.QWidget):
 
     def fetch_json(self):
         data = {
-            "metadata": {
-                "xg": self.h_x.get_data()[1],
-                "yg": self.h_y.get_data()[1],
-                "zg": self.h_z.get_data()[1],
-                "f": self.h_f.get_data()[1],
-                "file": self.h_file.get_data()[1]
-            },
+            "xg": self.h_x.get_data()[1],
+            "yg": self.h_y.get_data()[1],
+            "zg": self.h_z.get_data()[1],
+            "f": self.h_f.get_data()[1],
+            "file": self.h_file.get_data()[1],
             "shapes": {
                 w.box_id: w.to_json() for w in self.shapes
             }

@@ -10,7 +10,7 @@ from comunication import tcp_client
 from widgets.main_page import MainWidget
 
 if __name__ == '__main__':
-    tcp_client.send("hello Java")
+    # tcp_client.send("hello Java")
     app = QtWidgets.QApplication([])
 
     widget = MainWidget()

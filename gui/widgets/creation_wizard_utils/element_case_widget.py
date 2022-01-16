@@ -7,7 +7,7 @@ from widgets.creation_wizard_utils.text_edit_w_label import TextEditWLabel
 
 shapes = {
     "Select type": (),
-    "circle": ("centre x", "centre y", "centre z", "radius"),
+    "circle": ("centre_x", "centre_y", "centre_z", "radius"),
     "cuboid": ("x1", "y1", "z1", "x2", "y2", "z2")
 }
 
@@ -76,10 +76,15 @@ class ElementCaseWidget(QtWidgets.QWidget):
             self.right.addWidget(w_label)
 
     def to_json(self):
-        data = {
-            "metadata": {"type": self.combo_box.currentText()},
-            "contents": {v.get_data()[0]: v.get_data()[1] for v in self.ws}
-        }
+        data= {}
+        data["type"] = self.combo_box.currentText()
+        for k in self.ws:
+            pair = k.get_data()
+            data[pair[0]] = pair[1]
+        # data = {
+        #     "type": self.combo_box.currentText(),
+        #     {v.get_data()[0]: v.get_data()[1] for v in self.ws}
+        # }
 
         # import pprint
         # pprint.pprint(str(data))

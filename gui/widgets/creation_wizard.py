@@ -1,6 +1,9 @@
+import json
+
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import Qt
 
+from comunication import tcp_client
 from widgets.creation_wizard_utils.element_case_widget import ElementCaseWidget
 from widgets.creation_wizard_utils.text_edit_w_label import TextEditWLabel
 
@@ -52,7 +55,7 @@ class WizardWidget(QtWidgets.QWidget):
         w.setLayout(self.customizer_layout)
         self.scroll.setWidget(w)
 
-        self.shapes = []
+        self.shapes: list[ElementCaseWidget] = []
 
         # self.add_shape()
 
@@ -61,6 +64,7 @@ class WizardWidget(QtWidgets.QWidget):
         self.create_room = QtWidgets.QPushButton("Create room")
 
         self.add_shape.clicked.connect(self.add_shape_action)
+        self.create_room.clicked.connect(self.send_to_backend)
 
         self.btn_layout.addWidget(self.add_shape)
         self.btn_layout.addWidget(self.create_room)
@@ -77,3 +81,25 @@ class WizardWidget(QtWidgets.QWidget):
         widget = ElementCaseWidget(str(len(self.shapes)))
         self.shapes.append(widget)
         self.customizer_layout.addWidget(widget)
+
+    @QtCore.Slot()
+    def send_to_backend(self):
+        to_send = str(self.fetch_json()).replace("\'", "\"")
+        jo = json.loads(to_send)
+        print(json.dumps(jo, indent=4))
+        tcp_client.send(str(jo))
+
+    def fetch_json(self):
+        data = {
+            "metadata": {
+                "xg": self.h_x.get_data()[1],
+                "yg": self.h_y.get_data()[1],
+                "zg": self.h_z.get_data()[1],
+                "f": self.h_f.get_data()[1],
+                "file": self.h_file.get_data()[1]
+            },
+            "shapes": {
+                w.box_id: w.to_json() for w in self.shapes
+            }
+        }
+        return data

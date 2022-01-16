@@ -12,3 +12,6 @@ class TextEditWLabel(QtWidgets.QWidget):
 
         self.layout.addWidget(self.label)
         self.layout.addWidget(self.text_box)
+
+    def get_data(self):
+        return self.label.text(), self.text_box.text()

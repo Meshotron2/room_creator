@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 
 from PySide6 import QtWidgets, QtCore
@@ -14,6 +15,9 @@ shapes = {
 class ElementCaseWidget(QtWidgets.QWidget):
     def __init__(self, box_id):
         super().__init__()
+
+        self.box_id = box_id
+        self.ws: list[TextEditWLabel] = []
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.selection_layout = QtWidgets.QHBoxLayout(self)
@@ -63,10 +67,20 @@ class ElementCaseWidget(QtWidgets.QWidget):
 
         for v in to_add[0:mid]:
             w_label = TextEditWLabel(v)
-            # self.l_widgets.append(w_label)
+            self.ws.append(w_label)
             self.left.addWidget(w_label)
 
         for v in to_add[mid:len(to_add)]:
             w_label = TextEditWLabel(v)
-            # self.r_widgets.append(w_label)
+            self.ws.append(w_label)
             self.right.addWidget(w_label)
+
+    def to_json(self):
+        data = {
+            "metadata": {"type": self.combo_box.currentText()},
+            "contents": {v.get_data()[0]: v.get_data()[1] for v in self.ws}
+        }
+
+        # import pprint
+        # pprint.pprint(str(data))
+        return data

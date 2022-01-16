@@ -31,8 +31,8 @@ class ElementCaseWidget(QtWidgets.QWidget):
 
         self.right = QtWidgets.QVBoxLayout(self)
         self.left = QtWidgets.QVBoxLayout(self)
-        self.r_widgets = []
-        self.l_widgets = []
+        # self.r_widgets = []
+        # self.l_widgets = []
 
         self.customization_layout.addLayout(self.left)
         self.customization_layout.addLayout(self.right)
@@ -63,10 +63,10 @@ class ElementCaseWidget(QtWidgets.QWidget):
 
         for v in to_add[0:mid]:
             w_label = TextEditWLabel(v)
-            self.l_widgets.append(w_label)
+            # self.l_widgets.append(w_label)
             self.left.addWidget(w_label)
 
         for v in to_add[mid:len(to_add)]:
             w_label = TextEditWLabel(v)
-            self.r_widgets.append(w_label)
+            # self.r_widgets.append(w_label)
             self.right.addWidget(w_label)

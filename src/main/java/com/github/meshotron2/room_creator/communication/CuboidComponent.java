@@ -7,6 +7,7 @@ public class CuboidComponent implements RoomComponent {
     private String x2;
     private String y2;
     private String z2;
+    private char c;
 
     public CuboidComponent(String x1, String y1, String z1, String x2, String y2, String z2) {
         this.x1 = x1;
@@ -15,6 +16,34 @@ public class CuboidComponent implements RoomComponent {
         this.x2 = x2;
         this.y2 = y2;
         this.z2 = z2;
+    }
+
+    public int getX1() {
+        return Integer.parseInt(x1);
+    }
+
+    public int getY1() {
+        return Integer.parseInt(y1);
+    }
+
+    public int getZ1() {
+        return Integer.parseInt(z1);
+    }
+
+    public int getX2() {
+        return Integer.parseInt(x2);
+    }
+
+    public int getY2() {
+        return Integer.parseInt(y2);
+    }
+
+    public int getZ2() {
+        return Integer.parseInt(z2);
+    }
+
+    public char getC() {
+        return c;
     }
 
     @Override

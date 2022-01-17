@@ -1,5 +1,9 @@
 package com.github.meshotron2.room_creator.communication;
 
+import com.github.meshotron2.room_creator.Room;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -26,7 +30,7 @@ public class TCPServer extends Thread {
             while (true) {
                 final Socket socket = serverSocket.accept();
 
-                System.out.println("GUI connected");
+//                System.out.println("GUI connected");
 
 //                final OutputStream output = socket.getOutputStream();
 //                final PrintWriter writer = new PrintWriter(output, true);
@@ -34,8 +38,23 @@ public class TCPServer extends Thread {
                 final InputStream input = socket.getInputStream();
                 final BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
-//                writer.println(reader.readLine());
-                System.out.println(reader.readLine());
+                final String data = reader.readLine();
+
+                final GsonBuilder builder = new GsonBuilder();
+                builder.registerTypeAdapter(RoomComponent.class, new ComponentDeserializer());
+                builder.setPrettyPrinting();
+
+                final Gson gson = builder.create();
+
+                System.out.println(data);
+
+                final JSONRoom jr = gson.fromJson(data, JSONRoom.class);
+
+                final String jsonString = gson.toJson(jr);
+                System.out.println(jsonString);
+                System.out.println(jr);
+
+                jr.write();
             }
 
         } catch (IOException e) {

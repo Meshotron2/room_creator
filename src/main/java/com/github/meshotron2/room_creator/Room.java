@@ -99,6 +99,40 @@ public class Room {
         return new Room(file, x, y, z, f);
     }
 
+    public void doSphere(int x, int y, int z, int r, char n) throws IOException {
+//        startWrite();
+        int ix = x;
+        for (int x2 = 0; x2 <= ix; x2++) {
+            int iy = y;
+            for (int y2 = 0; y2 <= iy; y2++) {
+                int iz = z;
+                for (int z2 = 0; z2 <= iz; z2++)
+                    if (dist(ix, x2, iy, y2, iz, z2) <= r)
+                        writeNode(n, x2, y2, z2); // nodes[x2][y2][z2] = n;
+                    else
+                        writeNode(' ', x2, y2, z2);
+            }
+        }
+//        endWrite();
+    }
+
+    public void doCuboid(int x1, int x2, int y1, int y2, int z1, int z2, char n) throws IOException {
+        for (int xi = x1; xi <= x2; x2++) {
+            for (int yi = y1; yi <= y2; y2++) {
+                for (int zi = z1; zi <= z2; z2++)
+                    writeNode(n, xi, yi, zi); // nodes[x2][y2][z2] = n;
+            }
+        }
+    }
+
+    private double dist(int x1, int x2, int y1, int y2, int z1, int z2) {
+        final int xDist = (x1 - x2) * (x1 - x2);
+        final int yDist = (y1 - y2) * (y1 - y2);
+        final int zDist = (z1 - z2) * (z1 - z2);
+
+        return Math.sqrt(xDist + yDist + zDist);
+    }
+
     public String getFile() {
         return file;
     }

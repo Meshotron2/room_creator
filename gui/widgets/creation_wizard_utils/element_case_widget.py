@@ -7,8 +7,8 @@ from widgets.creation_wizard_utils.text_edit_w_label import TextEditWLabel
 
 shapes = {
     "Select type": (),
-    "circle": ("centre_x", "centre_y", "centre_z", "radius"),
-    "cuboid": ("x1", "y1", "z1", "x2", "y2", "z2")
+    "circle": ("centre_x", "centre_y", "centre_z", "radius", "coefficient"),
+    "cuboid": ("x1", "y1", "z1", "x2", "y2", "z2", "coefficient")
 }
 
 

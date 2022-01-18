@@ -9,13 +9,14 @@ public class CuboidComponent implements RoomComponent {
     private String z2;
     private char c;
 
-    public CuboidComponent(String x1, String y1, String z1, String x2, String y2, String z2) {
+    public CuboidComponent(String x1, String y1, String z1, String x2, String y2, String z2, String c) {
         this.x1 = x1;
         this.y1 = y1;
         this.z1 = z1;
         this.x2 = x2;
         this.y2 = y2;
         this.z2 = z2;
+        this.c = c.charAt(0);
     }
 
     public int getX1() {
@@ -55,6 +56,7 @@ public class CuboidComponent implements RoomComponent {
                 ", x2='" + x2 + '\'' +
                 ", y2='" + y2 + '\'' +
                 ", z2='" + z2 + '\'' +
+                ", c='" + c + '\'' +
                 '}';
     }
 }

@@ -17,7 +17,8 @@ public class ComponentDeserializer implements JsonDeserializer<RoomComponent> {
                         jsonObject.get("centre_x").getAsString(),
                         jsonObject.get("centre_y").getAsString(),
                         jsonObject.get("centre_z").getAsString(),
-                        jsonObject.get("radius").getAsString());
+                        jsonObject.get("radius").getAsString(),
+                        jsonObject.get("coefficient").getAsString());
 
                 System.out.println(circleComponent);
 
@@ -29,7 +30,8 @@ public class ComponentDeserializer implements JsonDeserializer<RoomComponent> {
                         jsonObject.get("z1").getAsString(),
                         jsonObject.get("x2").getAsString(),
                         jsonObject.get("y2").getAsString(),
-                        jsonObject.get("z2").getAsString());
+                        jsonObject.get("z2").getAsString(),
+                        jsonObject.get("coefficient").getAsString());
 
                 System.out.println(cuboidComponent);
 

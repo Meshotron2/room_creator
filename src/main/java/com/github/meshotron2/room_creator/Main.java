@@ -13,11 +13,11 @@ public class Main {
     public static void main(String[] args) {
         new Thread(new TCPServer(9999)).start();
 
-        final CLI cli = new CLI();
-        final Scanner scanner = new Scanner(System.in);
-        final Menu m = new MainMenu(scanner, "Choose an option");
-
-        cli.addMenu(m);
-        cli.start();
+//        final CLI cli = new CLI();
+//        final Scanner scanner = new Scanner(System.in);
+//        final Menu m = new MainMenu(scanner, "Choose an option");
+//
+//        cli.addMenu(m);
+//        cli.start();
     }
 }

@@ -19,7 +19,7 @@ class ElementCaseWidget(QtWidgets.QWidget):
         self.box_id = box_id
         self.ws: list[TextEditWLabel] = []
 
-        self.layout = QtWidgets.QVBoxLayout(self)
+        self.layout = QtWidgets.QVBoxLayout(self) 
         self.selection_layout = QtWidgets.QHBoxLayout(self)
         self.customization_layout = QtWidgets.QHBoxLayout(self)
 

@@ -8,17 +8,19 @@ def main():
     port = 9999
 
     s.connect((host, port))
-    msg = s.recv()
-    
+    msg = s.recv(1024)
+    msg = msg.decode('ascii')
     validation = msg_is_valid(msg)
     if(validation[0]):
-        s.close()
-        return [validation[1], msg]
+        valid = "Message is valid"
+        s.send(valid.encode('ascii'))
+        
     else:
         error = "Message is not valid"
-        s.send(error.encode('utf-8'))
-        s.close()
-        return ""
+        s.send(error.encode('ascii'))
+        
+    s.close()
+    return [validation[1], msg]
 
 
 def msg_is_valid(msg):

@@ -7,10 +7,11 @@ from widgets.creation_wizard_utils.labeled_widgets import InfoWidget
 #     def __init__(self, widget: QtWidgets.QWidget):
 #         super().__init__()
 #         self.widget = widget
+from widgets.main_page_utils.process_widget import ProcessWidget
 
 
 class NodeWidget(QtWidgets.QWidget):
-    def __init__(self, node_dict: dict):
+    def __init__(self, node_dict: dict, proc_dicts: list[dict]):
         super().__init__()
 
         self.layout = QtWidgets.QVBoxLayout(self)
@@ -34,13 +35,22 @@ class NodeWidget(QtWidgets.QWidget):
         self.layout.addLayout(self.info_layout)
 
         # Process widgets
+        self.proc_layout = QtWidgets.QHBoxLayout(self)
 
+        for pd in proc_dicts:
+            self.proc_layout.addWidget(ProcessWidget(pd))
+
+        self.layout.addLayout(self.proc_layout)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
 
     widget = NodeWidget({"node_id": 0, "cores": 6, "threads": 12, "cpu": 10, "totalRam": 32012341234, "usedRam": 124334,
-                         "temperature": [31, 32, 33, 34, 35, 36]})
+                         "temperature": [31, 32, 33, 34, 35, 36]},
+                        [ # byte nodeId, int pid, float cpu, int ram, float progress
+                            {"node_id": 0, "pid": 420, "cpu": 40, "ram": 50, "progress": 69},
+                            {"node_id": 0, "pid": 500, "cpu": 46, "ram": 40, "progress": 80}
+                        ])
     widget.resize(800, 600)
     widget.show()
 

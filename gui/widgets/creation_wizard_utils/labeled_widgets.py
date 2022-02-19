@@ -1,4 +1,5 @@
 from PySide6 import QtWidgets
+from PySide6.QtCore import Qt
 
 
 class WidgetWLabel(QtWidgets.QWidget):
@@ -21,3 +22,14 @@ class TextEditWLabel(WidgetWLabel):
 
     def get_data(self):
         return self.label.text(), self.text_box.text()
+
+
+class InfoWidget(WidgetWLabel):
+    def __init__(self, label: str, info: str):
+        self.text_box = QtWidgets.QLineEdit()
+        self.text_box.setText(info)
+
+        super().__init__(label, self.text_box)
+
+    def flags(self, _index):
+        return Qt.ItemIsEnabled

@@ -3,7 +3,7 @@ from enum import Enum
 
 from PySide6 import QtWidgets, QtCore
 
-from widgets.creation_wizard_utils.text_edit_w_label import TextEditWLabel
+from widgets.creation_wizard_utils.labeled_widgets import TextEditWLabel
 
 shapes = {
     "Select type": (),

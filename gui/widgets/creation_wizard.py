@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt
 
 from comunication import tcp_client
 from widgets.creation_wizard_utils.element_case_widget import ElementCaseWidget
-from widgets.creation_wizard_utils.text_edit_w_label import TextEditWLabel
+from widgets.creation_wizard_utils.labeled_widgets import TextEditWLabel
 
 
 class WizardWidget(QtWidgets.QWidget):

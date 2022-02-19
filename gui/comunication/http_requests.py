@@ -1,16 +1,16 @@
 import requests
 
-url = "http://localhost:8080/info"
 
-
-def get_updates():
+def get_updates(url: str) -> str:
     """
     With the help from <https://docs.python-requests.org/en/master/>
     """
 
     r = requests.get(url)
-    print(r.json())
+    json = r.json()
+    print(json)
+    return json
 
 
 if __name__ == '__main__':
-    get_updates()
+    get_updates("http://localhost:8080/info")

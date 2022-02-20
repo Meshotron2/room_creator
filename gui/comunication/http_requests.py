@@ -1,14 +1,16 @@
+from typing import Any
+
 import requests
 
 
-def get_updates(url: str) -> str:
+def get_updates(url: str) -> Any:
     """
     With the help from <https://docs.python-requests.org/en/master/>
     """
 
     r = requests.get(url)
     json = r.json()
-    print(json)
+    print("From server:", json)
     return json
 
 

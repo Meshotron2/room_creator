@@ -4,14 +4,31 @@ import com.github.meshotron2.cli_utils.CLI;
 import com.github.meshotron2.cli_utils.menu.Menu;
 import com.github.meshotron2.room_creator.cli.menus.MainMenu;
 import com.github.meshotron2.room_creator.communication.TCPServer;
+import com.github.meshotron2.room_creator.plugins.Config;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Scanner;
 
 public class Main {
     public static final String PROMPT = "> ";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new Thread(new TCPServer(9999)).start();
+
+//        final GsonBuilder builder = new GsonBuilder();
+//        final Gson gson = builder.create();
+//
+//        final String s = Files.readString(Path.of("config.json"));
+//
+//        final Config c = gson.fromJson(s, Config.class);
+//        System.out.println(c.toString());
 
 //        final CLI cli = new CLI();
 //        final Scanner scanner = new Scanner(System.in);

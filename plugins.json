@@ -1,0 +1,9 @@
+{
+  "entries": [
+    {
+      "pluginFile": "./plugins/test_plugin.py",
+      "listMaterials": "python3 %s lm %s",
+      "mapToDwm": "python3 %s dwm %s"
+    }
+  ]
+}

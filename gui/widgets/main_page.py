@@ -1,6 +1,7 @@
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtWidgets import QSizePolicy
 
+from comunication import tcp_client
 from widgets.creation_wizard import WizardWidget
 from widgets.status_page import StatusPageWidget
 
@@ -54,7 +55,7 @@ class MainWidget(QtWidgets.QWidget):
     def select_file(self):
         filename, name_filter = QtWidgets.QFileDialog.getOpenFileName(parent=self, caption='Select file to convert',
                                                                       dir='.')
-        self.text.setText(filename)
+        tcp_client.send(str({"type": "plugin", "data": filename}))
 
     @QtCore.Slot()
     def open_wizard(self):

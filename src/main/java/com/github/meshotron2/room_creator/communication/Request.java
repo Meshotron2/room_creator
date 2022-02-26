@@ -16,4 +16,8 @@ public class Request<T> {
                 ", data=" + data +
                 '}';
     }
+
+    public T getData() {
+        return data;
+    }
 }

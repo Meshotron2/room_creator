@@ -1,5 +1,7 @@
 package com.github.meshotron2.room_creator.communication;
 
+import com.github.meshotron2.room_creator.plugins.ConfigEntry;
+import com.github.meshotron2.room_creator.plugins.PluginManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -9,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.stream.Collectors;
 
 /**
  * with help from
@@ -20,10 +23,12 @@ import java.net.Socket;
  */
 public class TCPServer extends Thread {
 
-    final int port;
+    private final int port;
+    private final PluginManager pluginManager;
 
-    public TCPServer(int port) {
+    public TCPServer(int port, PluginManager pluginManager) {
         this.port = port;
+        this.pluginManager = pluginManager;
     }
 
     public void run() {
@@ -53,6 +58,28 @@ public class TCPServer extends Thread {
 
 //                final JSONRoom fromJson = gson.fromJson(data, JSONRoom.class);
                 final Request<?> fromJson = gson.fromJson(data, Request.class);
+
+                // plugin request
+                if (fromJson.getData() instanceof String) {
+                    final String[] split = ((String) fromJson.getData()).split("\\.");
+                    final String extension = split[split.length - 1];
+
+                    final String plugin = pluginManager.getConfig().getEntries().stream()
+                            .filter(configEntry -> configEntry.getFileTypes().contains(extension))
+                            .findFirst()
+                            .map(ConfigEntry::getPluginFile)
+                            .stream().collect(Collectors.toList()).get(0);
+
+                    if (plugin == null)
+                        return;
+
+                    try {
+                        pluginManager.runListMaterials(plugin, (String) fromJson.getData());
+                        pluginManager.runMapToDwm(plugin, (String) fromJson.getData());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 final String jsonString = gson.toJson(fromJson);
                 System.out.println(jsonString);

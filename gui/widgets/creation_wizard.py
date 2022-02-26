@@ -84,7 +84,7 @@ class WizardWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def send_to_backend(self):
-        to_send = str(self.fetch_json()).replace("\'", "\"")
+        to_send = str({"type": "room_final", "data": self.fetch_json()}).replace("\'", "\"")
         jo = json.loads(to_send)
         print(json.dumps(jo, indent=4))
         tcp_client.send(str(jo))

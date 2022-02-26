@@ -101,4 +101,8 @@ public class PluginManager {
 
         return buffer.toString();
     }
+
+    public Config getConfig() {
+        return config;
+    }
 }

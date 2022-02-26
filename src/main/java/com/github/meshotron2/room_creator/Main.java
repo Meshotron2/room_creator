@@ -21,7 +21,7 @@ public class Main {
     public static final String PROMPT = "> ";
 
     public static void main(String[] args) throws IOException {
-//        new Thread(new TCPServer(9999)).start();
+        new Thread(new TCPServer(9999)).start();
 
 //        final GsonBuilder builder = new GsonBuilder();
 //        final Gson gson = builder.create();
@@ -31,13 +31,13 @@ public class Main {
 //        final Config c = gson.fromJson(s, Config.class);
 //        System.out.println(c.toString());
 
-        try {
-            PluginManager pluginManager = new PluginManager();
-            System.out.println(pluginManager.runListMaterials("./plugins/test_plugin.py", "output"));
-            System.out.println(pluginManager.runMapToDwm("./plugins/test_plugin.py", "output"));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            PluginManager pluginManager = new PluginManager();
+//            System.out.println(pluginManager.runListMaterials("./plugins/test_plugin.py", "output"));
+//            System.out.println(pluginManager.runMapToDwm("./plugins/test_plugin.py", "output"));
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
 //        final CLI cli = new CLI();
 //        final Scanner scanner = new Scanner(System.in);

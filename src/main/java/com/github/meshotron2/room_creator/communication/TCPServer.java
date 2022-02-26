@@ -44,19 +44,21 @@ public class TCPServer extends Thread {
 
                 final GsonBuilder builder = new GsonBuilder();
                 builder.registerTypeAdapter(RoomComponent.class, new ComponentDeserializer());
+                builder.registerTypeAdapter(RoomComponent.class, new RequestDeserializer());
                 builder.setPrettyPrinting();
 
                 final Gson gson = builder.create();
 
                 System.out.println(data);
 
-                final JSONRoom jr = gson.fromJson(data, JSONRoom.class);
+//                final JSONRoom fromJson = gson.fromJson(data, JSONRoom.class);
+                final Request<?> fromJson = gson.fromJson(data, Request.class);
 
-                final String jsonString = gson.toJson(jr);
+                final String jsonString = gson.toJson(fromJson);
                 System.out.println(jsonString);
-                System.out.println(jr);
+                System.out.println(fromJson);
 
-                jr.write();
+//                fromJson.write();
             }
 
         } catch (IOException e) {

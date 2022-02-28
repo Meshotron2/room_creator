@@ -15,13 +15,17 @@ class WidgetWLabel(QtWidgets.QWidget):
 
 
 class TextEditWLabel(WidgetWLabel):
-    def __init__(self, label: str):
+    def __init__(self, label: str, value: str = ""):
         self.text_box = QtWidgets.QLineEdit()
+        self.text_box.setText(value)
 
         super().__init__(label, self.text_box)
 
     def get_data(self):
         return self.label.text(), self.text_box.text()
+
+    def set_text(self, txt: str):
+        self.text_box.setText(txt)
 
 
 class InfoWidget(WidgetWLabel):

@@ -13,13 +13,13 @@ shapes = {
 
 
 class ElementCaseWidget(QtWidgets.QWidget):
-    def __init__(self, box_id):
+    def __init__(self, box_id: str, data: dict[str, str] = None):
         super().__init__()
 
         self.box_id = box_id
         self.ws: list[TextEditWLabel] = []
 
-        self.layout = QtWidgets.QVBoxLayout(self) 
+        self.layout = QtWidgets.QVBoxLayout(self)
         self.selection_layout = QtWidgets.QHBoxLayout(self)
         self.customization_layout = QtWidgets.QHBoxLayout(self)
 
@@ -42,6 +42,27 @@ class ElementCaseWidget(QtWidgets.QWidget):
         self.customization_layout.addLayout(self.right)
 
         self.combo_box.currentTextChanged.connect(self.update)
+
+        if data is not None:
+            self.populate(data)
+
+    def populate(self, data: dict[str, str]):
+        # to_add = [(k, data[k]) for k in data]
+        to_add = []
+        for k in data:
+            to_add.append((k, data[k]))
+
+        mid = int(len(to_add) / 2)
+
+        for k, v in to_add[0:mid]:
+            w_label = TextEditWLabel(k, v)
+            self.ws.append(w_label)
+            self.left.addWidget(w_label)
+
+        for k, v in to_add[mid:len(to_add)]:
+            w_label = TextEditWLabel(k, v)
+            self.ws.append(w_label)
+            self.right.addWidget(w_label)
 
     @QtCore.Slot()
     def update(self):
@@ -76,8 +97,7 @@ class ElementCaseWidget(QtWidgets.QWidget):
             self.right.addWidget(w_label)
 
     def to_json(self):
-        data= {}
-        data["type"] = self.combo_box.currentText()
+        data = {"type": self.combo_box.currentText()}
         for k in self.ws:
             pair = k.get_data()
             data[pair[0]] = pair[1]

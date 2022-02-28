@@ -9,8 +9,10 @@ from widgets.creation_wizard_utils.labeled_widgets import TextEditWLabel
 
 
 class WizardWidget(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, room: dict = None):
         super().__init__()
+
+        self.use_plugin = room is not None
 
         # Layouts
         self.layout = QtWidgets.QVBoxLayout(self)
@@ -76,18 +78,38 @@ class WizardWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.scroll)
         self.layout.addLayout(self.btn_layout)
 
+        if room is not None:
+            self.h_x.set_text(room['xg'])
+            self.h_y.set_text(room['yg'])
+            self.h_z.set_text(room['zg'])
+            self.h_f.set_text(room['f'])
+            self.h_file.set_text(room['file'])
+
+            for rc in room["shapes"]:
+                print(type(room["shapes"][rc]), room["shapes"][rc])
+                self.add_widget_slot(room["shapes"][rc])
+
     @QtCore.Slot()
     def add_shape_action(self):
-        widget = ElementCaseWidget(str(len(self.shapes)))
+        self.add_widget_slot()
+
+    def add_widget_slot(self, data: dict[str, str] = None):
+        widget = ElementCaseWidget(str(len(self.shapes)), data)
         self.shapes.append(widget)
         self.customizer_layout.addWidget(widget)
+        return widget
 
     @QtCore.Slot()
     def send_to_backend(self):
-        to_send = str({"type": "room_final", "data": self.fetch_json()}).replace("\'", "\"")
+        req_type = "room_plugin" if self.use_plugin else "room_final"
+
+        data = self.fetch_json() if not self.use_plugin else {"plugin": self.h_file.get_data()[1], "room": self.fetch_json()}
+
+        to_send = str({"type": req_type, "data": data}).replace("\'", "\"")
+        print(to_send)
         jo = json.loads(to_send)
         print(json.dumps(jo, indent=4))
-        tcp_client.send(str(jo))
+        tcp_client.send(str(jo), wait=self.use_plugin)
 
     def fetch_json(self):
         data = {

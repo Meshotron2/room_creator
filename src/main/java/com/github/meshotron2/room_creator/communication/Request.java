@@ -20,4 +20,8 @@ public class Request<T> {
     public T getData() {
         return data;
     }
+
+    public String getType() {
+        return type;
+    }
 }

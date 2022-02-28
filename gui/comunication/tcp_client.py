@@ -6,7 +6,7 @@ https://www.tutorialspoint.com/python3/python_networking.htm
 import socket
 
 
-def send(msg: str):
+def send(msg: str, wait: bool = False):
     print(msg)
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -16,6 +16,14 @@ def send(msg: str):
 
     s.connect((host, port))
 
-    s.send(msg.encode('utf-8'))
+    s.send((msg + '\n').encode('utf-8'))
+
+    if wait:
+        reply = s.recv(1024)
 
     s.close()
+
+    if wait:
+        decoded = reply.decode('utf-8')
+        print(decoded)
+        return decoded

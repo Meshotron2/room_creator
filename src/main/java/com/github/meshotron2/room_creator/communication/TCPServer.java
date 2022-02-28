@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +37,7 @@ public class TCPServer extends Thread {
 
             while (true) {
                 final Socket socket = serverSocket.accept();
+                System.out.println("Accept");
 
 //                System.out.println("GUI connected");
 
@@ -47,50 +49,82 @@ public class TCPServer extends Thread {
 
                 final String data = reader.readLine();
 
+                System.out.println("Received " + data);
+
                 final GsonBuilder builder = new GsonBuilder();
                 builder.registerTypeAdapter(RoomComponent.class, new ComponentDeserializer());
-                builder.registerTypeAdapter(RoomComponent.class, new RequestDeserializer());
+                builder.registerTypeAdapter(Request.class, new RequestDeserializer());
                 builder.setPrettyPrinting();
 
                 final Gson gson = builder.create();
 
-                System.out.println(data);
-
 //                final JSONRoom fromJson = gson.fromJson(data, JSONRoom.class);
                 final Request<?> fromJson = gson.fromJson(data, Request.class);
+                System.out.println("AFTER ALL: " + fromJson + fromJson.getData().getClass().getName());
 
                 // plugin request
-                if (fromJson.getData() instanceof String) {
-                    final String[] split = ((String) fromJson.getData()).split("\\.");
-                    final String extension = split[split.length - 1];
+//                if (fromJson.getData() instanceof String)
+                switch (fromJson.getType()) {
+                    case "plugin":
+                        processPluginRequest(socket, fromJson);
+                        break;
 
-                    final String plugin = pluginManager.getConfig().getEntries().stream()
-                            .filter(configEntry -> configEntry.getFileTypes().contains(extension))
-                            .findFirst()
-                            .map(ConfigEntry::getPluginFile)
-                            .stream().collect(Collectors.toList()).get(0);
+                    // plugin and room request
+                    case "room_plugin":
+                        processPluginRoomRequest(socket, fromJson);
+                        break;
 
-                    if (plugin == null)
-                        return;
-
-                    try {
-                        pluginManager.runListMaterials(plugin, (String) fromJson.getData());
-                        pluginManager.runMapToDwm(plugin, (String) fromJson.getData());
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    // room request
+                    case "room_final":
+                        ((JSONRoom) fromJson.getData()).write();
+                        break;
                 }
-
-                final String jsonString = gson.toJson(fromJson);
-                System.out.println(jsonString);
-                System.out.println(fromJson);
-
-//                fromJson.write();
             }
 
         } catch (IOException e) {
             System.out.println("Server exception: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void processPluginRoomRequest(Socket socket, Request<?> fromJson) throws IOException {
+        final String plugin = getPluginFromRequest(((PluginAndRoom) fromJson.getData()).getPlugin());
+        if (plugin == null) return;
+
+        try {
+            final String pluginResult = pluginManager.runMapToDwm(plugin, ((PluginAndRoom) fromJson.getData()).getRoom().toString());
+            System.out.println("DWM PLUGIN: " + pluginResult);
+            socket.getOutputStream().write(
+                    pluginResult.getBytes(StandardCharsets.UTF_8)
+            );
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void processPluginRequest(Socket socket, Request<?> fromJson) throws IOException {
+        final String plugin = getPluginFromRequest((String) fromJson.getData());
+        if (plugin == null) return;
+
+        try {
+            final String pluginResult = pluginManager.runListMaterials(plugin, (String) fromJson.getData());
+            System.out.println("LM PLUGIN: " + pluginResult);
+            socket.getOutputStream().write(
+                    pluginResult.getBytes(StandardCharsets.UTF_8)
+            );
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getPluginFromRequest(String fileToProcess) {
+        final String[] split = fileToProcess.split("\\.");
+        final String extension = split[split.length - 1];
+
+        return pluginManager.getConfig().getEntries().stream()
+                .filter(configEntry -> configEntry.getFileTypes().contains(extension))
+                .findFirst()
+                .map(ConfigEntry::getPluginFile)
+                .stream().collect(Collectors.toList()).get(0);
     }
 }

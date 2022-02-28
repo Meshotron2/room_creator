@@ -1,3 +1,5 @@
+import json
+
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtWidgets import QSizePolicy
 
@@ -55,7 +57,10 @@ class MainWidget(QtWidgets.QWidget):
     def select_file(self):
         filename, name_filter = QtWidgets.QFileDialog.getOpenFileName(parent=self, caption='Select file to convert',
                                                                       dir='.')
-        tcp_client.send(str({"type": "plugin", "data": filename}))
+        room = tcp_client.send(str({"type": "plugin", "data": filename}), wait=True)
+        print("here")
+        self.open_window = WizardWidget(json.loads(room.replace('\'', '\"')))
+        self.open_window.show()
 
     @QtCore.Slot()
     def open_wizard(self):

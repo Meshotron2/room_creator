@@ -27,7 +27,7 @@ public class RoomInput extends InputSequence<Room> {
                 (int) getInputs().get(1).validate(),
                 (int) getInputs().get(2).validate(),
                 (int) getInputs().get(3).validate(),
-                (long) getInputs().get(4).validate()
+                (int) getInputs().get(4).validate()
         );
     }
 }

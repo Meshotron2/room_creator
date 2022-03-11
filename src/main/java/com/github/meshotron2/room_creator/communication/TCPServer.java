@@ -76,9 +76,12 @@ public class TCPServer extends Thread {
 
                     // room request
                     case "room_final":
+                        System.out.println("Start");
                         ((JSONRoom) fromJson.getData()).write();
+                        System.out.println("End");
                         break;
                 }
+                socket.close();
             }
 
         } catch (IOException e) {

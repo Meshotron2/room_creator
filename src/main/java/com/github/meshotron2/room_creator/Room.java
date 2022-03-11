@@ -1,5 +1,7 @@
 package com.github.meshotron2.room_creator;
 
+import com.sun.jdi.IntegerType;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -62,7 +64,11 @@ public class Room {
         this.writer.writeInt(Integer.reverseBytes(y));
         this.writer.writeInt(Integer.reverseBytes(z));
 
-        this.writer.writeLong(Long.reverseBytes(f));
+        this.writer.writeInt(Integer.reverseBytes(f));
+
+        for (int i = 0; i < x * y * z; i++) {
+            writer.write(' ');
+        }
     }
 
     public void endWrite() throws IOException {
@@ -70,13 +76,18 @@ public class Room {
     }
 
     public void writeNode(char c) throws IOException {
-        writer.write(new byte[]{(byte) c, (byte) (c >> 8)});
+        writer.write(c);
     }
 
     public void writeNode(char c, int x, int y, int z) throws IOException {
-        final int n = 24 + x * y * z;
+//        System.out.println("Writing node");
+//        final int n = 4*4 + (x+1) * (y+1) * (z+1);
+        final int n = 4*4 + (x*this.y*this.z) + (y*this.z) + z;
+        System.out.printf("(%d, %d, %d) - %d%n", x, y, z, n);
 
-        byte[] bytes = {(byte) (c >> 8), (byte) c};
+//        byte[] bytes = {(byte) (c >> 8), (byte) c};
+        byte bytes = (byte) c;
+
 //        System.out.println(bytes.length);
 //        writer.write(bytes, n, 2);
 
@@ -101,28 +112,26 @@ public class Room {
 
     public void doSphere(int x, int y, int z, int r, char n) throws IOException {
 //        startWrite();
-        int ix = x;
-        for (int x2 = 0; x2 <= ix; x2++) {
-            int iy = y;
-            for (int y2 = 0; y2 <= iy; y2++) {
-                int iz = z;
-                for (int z2 = 0; z2 <= iz; z2++)
-                    if (dist(ix, x2, iy, y2, iz, z2) <= r)
+        for (int x2 = 0; x2 <= x; x2++) {
+            for (int y2 = 0; y2 <= y; y2++) {
+                for (int z2 = 0; z2 <= z; z2++)
+                    if (dist(x, x2, y, y2, z, z2) <= r)
                         writeNode(n, x2, y2, z2); // nodes[x2][y2][z2] = n;
-                    else
-                        writeNode(' ', x2, y2, z2);
+//                    else
+//                        writeNode(' ', x2, y2, z2);
             }
         }
 //        endWrite();
     }
 
     public void doCuboid(int x1, int x2, int y1, int y2, int z1, int z2, char n) throws IOException {
-        for (int xi = x1; xi <= x2; x2++) {
-            for (int yi = y1; yi <= y2; y2++) {
-                for (int zi = z1; zi <= z2; z2++)
+        System.out.printf("CUBOID %d-%d %d-%d %d-%d%n", x1, x2, y1, y2, z1, z2);
+        for (int xi = x1; xi <= x2; xi++)
+            for (int yi = y1; yi <= y2; yi++)
+                for (int zi = z1; zi <= z2; zi++) {
+//                    System.out.println("Writing node");
                     writeNode(n, xi, yi, zi); // nodes[x2][y2][z2] = n;
-            }
-        }
+                }
     }
 
     private double dist(int x1, int x2, int y1, int y2, int z1, int z2) {

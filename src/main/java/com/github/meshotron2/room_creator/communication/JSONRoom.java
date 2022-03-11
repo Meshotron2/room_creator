@@ -26,6 +26,7 @@ public class JSONRoom {
                     r.doSphere(cc.getCentre_x(), cc.getCentre_y(), cc.getCentre_z(), cc.getRadius(), cc.getC());
                 }
                 if (rc instanceof CuboidComponent) {
+                    System.out.println("FOUND A CUBOID");
                     final CuboidComponent cc = (CuboidComponent) rc;
                     r.doCuboid(cc.getX1(), cc.getX2(), cc.getY1(), cc.getY2(), cc.getZ1(), cc.getZ2(), cc.getC());
                 }
@@ -34,6 +35,7 @@ public class JSONRoom {
             }
         });
 
+        System.out.println("Finished!");
         r.endWrite();
     }
 

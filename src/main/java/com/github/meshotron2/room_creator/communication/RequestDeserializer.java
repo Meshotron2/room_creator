@@ -9,7 +9,7 @@ public class RequestDeserializer implements JsonDeserializer<Request<?>> {
     @Override
     public Request<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         final JsonObject o = jsonElement.getAsJsonObject();
-        System.out.println("DESERIALIZING");
+        System.out.println("DESERIALIZING " + o.toString());
 
         final String reqType = o.get("type").getAsString();
         switch (reqType) {

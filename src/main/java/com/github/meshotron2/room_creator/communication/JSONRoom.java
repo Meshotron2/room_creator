@@ -58,4 +58,8 @@ public class JSONRoom {
 
         return sb.toString();
     }
+
+    public String getFile() {
+        return file;
+    }
 }

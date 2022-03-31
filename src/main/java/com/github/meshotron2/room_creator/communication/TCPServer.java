@@ -62,9 +62,9 @@ public class TCPServer extends Thread {
                 final Request<?> fromJson = gson.fromJson(data, Request.class);
                 System.out.println("AFTER ALL: " + fromJson + fromJson.getData().getClass().getName());
 
-                // plugin request
 //                if (fromJson.getData() instanceof String)
                 switch (fromJson.getType()) {
+                    // plugin request
                     case "plugin":
                         processPluginRequest(socket, fromJson);
                         break;
@@ -76,9 +76,9 @@ public class TCPServer extends Thread {
 
                     // room request
                     case "room_final":
-                        System.out.println("Start");
-                        ((JSONRoom) fromJson.getData()).write();
-                        System.out.println("End");
+                        final JSONRoom room = (JSONRoom) fromJson.getData();
+                        room.write();
+                        new SendFileClient().send(room.getFile());
                         break;
                 }
                 socket.close();
@@ -91,11 +91,12 @@ public class TCPServer extends Thread {
     }
 
     private void processPluginRoomRequest(Socket socket, Request<?> fromJson) throws IOException {
-        final String plugin = getPluginFromRequest(((PluginAndRoom) fromJson.getData()).getPlugin());
+        final PluginAndRoom data = (PluginAndRoom) fromJson.getData();
+        final String plugin = getPluginFromRequest(data.getPlugin());
         if (plugin == null) return;
 
         try {
-            final String pluginResult = pluginManager.runMapToDwm(plugin, ((PluginAndRoom) fromJson.getData()).getRoom().toString());
+            final String pluginResult = pluginManager.runMapToDwm(plugin, data.getRoom().toString());
             System.out.println("DWM PLUGIN: " + pluginResult);
             socket.getOutputStream().write(
                     pluginResult.getBytes(StandardCharsets.UTF_8)

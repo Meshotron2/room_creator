@@ -8,14 +8,15 @@ import java.net.Socket;
 public class SendFileClient {
 
     public static void main(String[] args) {
-        new SendFileClient().send();
+        new SendFileClient().send("comp.dwm");
     }
 
-    public void send() {
-        try (Socket socket = new Socket("localhost", 5000)) {
+    public void send(String fileName) {
+        System.out.println("SEND");
+        try (final Socket socket = new Socket("localhost", 5000)) {
             final DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
-            sendFile("yeet", dataOutputStream); // colocar caminho do ficheiro
+            sendFile(fileName, dataOutputStream); // colocar caminho do ficheiro
 
             dataOutputStream.close();
         } catch (Exception e) {
@@ -37,5 +38,6 @@ public class SendFileClient {
             dataOutputStream.flush();
         }
         fileInputStream.close();
+        System.out.println("Finished transfer");
     }
 }

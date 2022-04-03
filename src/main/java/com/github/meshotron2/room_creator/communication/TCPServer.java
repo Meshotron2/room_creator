@@ -77,8 +77,10 @@ public class TCPServer extends Thread {
                     // room request
                     case "room_final":
                         final JSONRoom room = (JSONRoom) fromJson.getData();
+                        System.out.println("Writing...");
                         room.write();
-                        new SendFileClient().send(room.getFile());
+                        System.out.println("File written!");
+                        SendFileClient.send(room.getFile());
                         break;
                 }
                 socket.close();

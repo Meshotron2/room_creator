@@ -5,15 +5,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.Socket;
 
-public class SendFileClient {
+public interface SendFileClient {
 
-    public static void main(String[] args) {
-        new SendFileClient().send("comp.dwm");
+    static void main(String[] args) {
+        send("final_test.dwm");
     }
 
-    public void send(String fileName) {
+    static void send(String fileName) {
         System.out.println("SEND");
-        try (final Socket socket = new Socket("localhost", 5000)) {
+        try (final Socket socket = new Socket("127.0.0.1", 5000)) {
             final DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
             sendFile(fileName, dataOutputStream); // colocar caminho do ficheiro
@@ -24,7 +24,7 @@ public class SendFileClient {
         }
     }
 
-    private void sendFile(String path, DataOutputStream dataOutputStream) throws Exception {
+    private static void sendFile(String path, DataOutputStream dataOutputStream) throws Exception {
         int bytes;
         final File file = new File(path);
         final FileInputStream fileInputStream = new FileInputStream(file);

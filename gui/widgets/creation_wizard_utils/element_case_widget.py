@@ -6,7 +6,7 @@ from PySide6 import QtWidgets, QtCore
 from widgets.creation_wizard_utils.labeled_widgets import TextEditWLabel
 
 shapes = {
-    "Select type": (),
+    "Select_type": (),
     "circle": ("centre_x", "centre_y", "centre_z", "radius", "coefficient"),
     "cuboid": ("x1", "y1", "z1", "x2", "y2", "z2", "coefficient")
 }

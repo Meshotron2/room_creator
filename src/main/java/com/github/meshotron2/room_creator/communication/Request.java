@@ -13,7 +13,7 @@ public class Request<T> {
     public String toString() {
         return "Request{" +
                 "type='" + type + '\'' +
-                ", data=" + data +
+                ", data=" + data.toString() +
                 '}';
     }
 

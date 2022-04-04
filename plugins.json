@@ -3,7 +3,8 @@
     {
       "pluginFile": "./plugins/test_plugin.py",
       "fileTypes": [
-        "txt"
+        "txt",
+        "dwm"
       ],
       "listMaterials": "python3 %s lm %s",
       "mapToDwm": "python3 %s dwm %s"

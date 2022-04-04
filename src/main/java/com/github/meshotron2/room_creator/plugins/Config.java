@@ -10,6 +10,11 @@ public class Config {
     }
 
     public List<ConfigEntry> getEntries() {
+        System.out.println("ENTRIES ============\\\\\\\\");
+        entries.forEach(e -> {
+            e.getFileTypes().forEach(System.out::println);
+        });
+        System.out.println("ENTRIES ============///");
         return entries;
     }
 

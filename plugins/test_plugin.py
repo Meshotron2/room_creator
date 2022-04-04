@@ -7,7 +7,7 @@ if sys.argv[1] == "lm":
         "yg": "100",
         "zg": "100",
         "f": "8000",
-        "file": "faskljdf.dwm",
+        "file": "test_plugin_file.dwm",
         "shapes": {
             "0": {
                 "centre_x": "10",
@@ -24,4 +24,4 @@ if sys.argv[1] == "lm":
 if sys.argv[1] == "dwm":
     print("Port to DWM")
 
-    print(sys.argv[3])
+    print('\n'.join(sys.argv))

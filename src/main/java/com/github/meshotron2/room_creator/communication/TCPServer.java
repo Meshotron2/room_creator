@@ -98,7 +98,7 @@ public class TCPServer extends Thread {
         if (plugin == null) return;
 
         try {
-            final String pluginResult = pluginManager.runMapToDwm(plugin, data.getRoom().toString());
+            final String pluginResult = pluginManager.runMapToDwm(plugin, new Gson().toJson(data.getRoom()));
             System.out.println("DWM PLUGIN: " + pluginResult);
             socket.getOutputStream().write(
                     pluginResult.getBytes(StandardCharsets.UTF_8)

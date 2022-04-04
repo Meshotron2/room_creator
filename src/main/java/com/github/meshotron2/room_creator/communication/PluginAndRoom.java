@@ -16,4 +16,12 @@ public class PluginAndRoom {
     public String getPlugin() {
         return plugin;
     }
+
+    @Override
+    public String toString() {
+        return "PluginAndRoom{" +
+                "plugin='" + plugin + '\'' +
+                ", room=" + room +
+                '}';
+    }
 }

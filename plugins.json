@@ -3,11 +3,20 @@
     {
       "pluginFile": "./plugins/test_plugin.py",
       "fileTypes": [
-        "txt",
-        "dwm"
+        "obj"
       ],
-      "listMaterials": "python3 %s lm %s",
-      "mapToDwm": "python3 %s dwm %s"
+      "listMaterials": "python3 %script_file% lm %file%",
+      "mapToDwm": "python3 %script_file% dwm %data%"
+    },
+
+    {
+      "pluginFile": "./plugins/ScriptPlugin-1.0-SNAPSHOT.jar",
+      "fileTypes": [
+        "dwm",
+        "txt"
+      ],
+      "listMaterials": "cat %file% | java -jar %script_file% lm %file%",
+      "mapToDwm": "cat %file% | java -jar %script_file% dwm %data%"
     }
   ]
 }

@@ -6,8 +6,10 @@ import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,7 +43,7 @@ public class PluginManager {
      * Runs the list materials phase
      *
      * @param plugin The plugin to run
-     * @param file   The file to be passed to the plugin
+     * @param file   The file to be processed by the plugin
      * @return The plugin's result. It should be in the format TODO
      * @throws IOException          From {@link ProcessBuilder#start()} or {@link BufferedReader#readLine()}
      * @throws InterruptedException From {@link Process#waitFor()}
@@ -52,8 +54,13 @@ public class PluginManager {
             return "Not found";
 
         // TODO: 2/23/22 Allow for different order of parameters
-        final String command = String.format(config.getPlugin(plugin).getListMaterials(), plugin, file);
-        final ProcessBuilder pb = new ProcessBuilder().command(command.split(" "));
+//        final String command = String.format(config.getPlugin(plugin).getListMaterials(), plugin, file);
+        final String command = config.getPlugin(plugin).getListMaterials()
+                .replaceAll("%script_file%", plugin)
+                .replaceAll("%file%", file);
+        System.out.println("RUN LM: " + command);
+//        final ProcessBuilder pb = new ProcessBuilder().command(command.split(" "));
+        final ProcessBuilder pb = new ProcessBuilder().command("/bin/sh", "-c", command);
         pb.redirectErrorStream(true);
 
         final Process p = pb.start();
@@ -79,15 +86,26 @@ public class PluginManager {
      * @throws IOException          From {@link ProcessBuilder#start()} or {@link BufferedReader#readLine()}
      * @throws InterruptedException From {@link Process#waitFor()}
      */
-    public String runMapToDwm(String plugin, String data) throws IOException, InterruptedException {
+    public String runMapToDwm(String plugin, String data, String file) throws IOException, InterruptedException {
 
         if (!getPlugins().contains(plugin))
             return "";
 
         // TODO: 2/23/22 Allow for different order of parameters
-        final String command = String.format(config.getPlugin(plugin).getMapToDwm(), plugin, data);
-        final ProcessBuilder pb = new ProcessBuilder().command(command.split(" "));
-        pb.redirectErrorStream(true);
+//        final String command = String.format(config.getPlugin(plugin).getMapToDwm(), plugin, data);
+        final String command = config.getPlugin(plugin).getMapToDwm()
+                .replaceAll("%script_file%", plugin)
+                .replaceAll("%data%", Base64.getEncoder().encodeToString(data.getBytes(StandardCharsets.UTF_8)))
+                .replaceAll("%file%", file);
+
+        System.out.println("RUN DWM: " + command);
+
+//        final ProcessBuilder pb = new ProcessBuilder().command(command.split(" "));
+        final ProcessBuilder pb = new ProcessBuilder().command("/bin/sh", "-c",
+//                command.replaceAll("\"", "\\\"")
+                command
+        );
+//        pb.redirectErrorStream(true);
 
         final Process p = pb.start();
         final BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));

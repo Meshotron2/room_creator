@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -93,12 +95,15 @@ public class TCPServer extends Thread {
     }
 
     private void processPluginRoomRequest(Socket socket, Request<?> fromJson) throws IOException {
+        System.out.println("REQUEST " + fromJson);
         final PluginAndRoom data = (PluginAndRoom) fromJson.getData();
         final String plugin = getPluginFromRequest(data.getPlugin());
         if (plugin == null) return;
 
+        System.out.println("Chosen plugin: " + plugin);
+
         try {
-            final String pluginResult = pluginManager.runMapToDwm(plugin, new Gson().toJson(data.getRoom()));
+            final String pluginResult = pluginManager.runMapToDwm(plugin, new Gson().toJson(data.getRoom()), ((PluginAndRoom) fromJson.getData()).getPlugin());
             System.out.println("DWM PLUGIN: " + pluginResult);
             socket.getOutputStream().write(
                     pluginResult.getBytes(StandardCharsets.UTF_8)
@@ -111,6 +116,9 @@ public class TCPServer extends Thread {
     private void processPluginRequest(Socket socket, Request<?> fromJson) throws IOException {
         final String plugin = getPluginFromRequest((String) fromJson.getData());
         if (plugin == null) return;
+
+        System.out.println("Chosen plugin: " + plugin);
+        System.out.println(fromJson.getData());
 
         try {
             final String pluginResult = pluginManager.runListMaterials(plugin, (String) fromJson.getData());
@@ -126,6 +134,8 @@ public class TCPServer extends Thread {
     private String getPluginFromRequest(String fileToProcess) {
         final String[] split = fileToProcess.split("\\.");
         final String extension = split[split.length - 1];
+
+        System.out.println("Finding extension: " + extension);
 
         return pluginManager.getConfig().getEntries().stream()
                 .filter(configEntry -> configEntry.getFileTypes().contains(extension))

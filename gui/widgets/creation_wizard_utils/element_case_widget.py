@@ -28,7 +28,10 @@ class ElementCaseWidget(QtWidgets.QWidget):
 
         self.label = QtWidgets.QLabel(box_id)
         self.combo_box = QtWidgets.QComboBox()
-        self.combo_box.addItems([k for k in shapes.keys()])
+        if data is None or "type" not in data:
+            self.combo_box.addItems([k for k in shapes.keys()])
+        else:
+            self.combo_box.addItem(data["type"])
 
         self.selection_layout.addWidget(self.label)
         self.selection_layout.addWidget(self.combo_box)
@@ -50,6 +53,8 @@ class ElementCaseWidget(QtWidgets.QWidget):
         # to_add = [(k, data[k]) for k in data]
         to_add = []
         for k in data:
+            if k == "type":
+                continue
             to_add.append((k, data[k]))
 
         mid = int(len(to_add) / 2)

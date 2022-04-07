@@ -58,8 +58,9 @@ class MainWidget(QtWidgets.QWidget):
         filename, name_filter = QtWidgets.QFileDialog.getOpenFileName(parent=self, caption='Select file to convert',
                                                                       dir='.')
         room = tcp_client.send(str({"type": "plugin", "data": filename}), wait=True)
-        print("here")
-        self.open_window = WizardWidget(json.loads(room.replace('\'', '\"')))
+        room = room[room.index('{'):]
+        print("PREV:", room)
+        self.open_window = WizardWidget(json.loads(room.replace('},}', '}}').replace('\'', '\"')))
         self.open_window.show()
 
     @QtCore.Slot()

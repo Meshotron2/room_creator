@@ -79,11 +79,15 @@ class WizardWidget(QtWidgets.QWidget):
         self.layout.addLayout(self.btn_layout)
 
         if room is not None:
+            self.plugin_file = TextEditWLabel("plugin_file")
+            self.h_right.addWidget(self.plugin_file)
+
             self.h_x.set_text(room['xg'])
             self.h_y.set_text(room['yg'])
             self.h_z.set_text(room['zg'])
             self.h_f.set_text(room['f'])
-            self.h_file.set_text(room['file'])
+            # self.h_file.set_text(room['file'])
+            self.plugin_file.set_text(room['file'])
 
             for rc in room["shapes"]:
                 print(type(room["shapes"][rc]), room["shapes"][rc])
@@ -103,7 +107,7 @@ class WizardWidget(QtWidgets.QWidget):
     def send_to_backend(self):
         req_type = "room_plugin" if self.use_plugin else "room_final"
 
-        data = self.fetch_json() if not self.use_plugin else {"plugin": self.h_file.get_data()[1], "room": self.fetch_json()}
+        data = self.fetch_json() if not self.use_plugin else {"plugin": self.plugin_file.get_data()[1], "room": self.fetch_json()}
 
         to_send = str({"type": req_type, "data": data}).replace("\'", "\"")
         print(to_send)
@@ -122,4 +126,8 @@ class WizardWidget(QtWidgets.QWidget):
                 w.box_id: w.to_json() for w in self.shapes
             }
         }
+
+        if self.use_plugin:
+            data["plugin_file"] = self.plugin_file.get_data()[1]
+
         return data

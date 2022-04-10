@@ -9,6 +9,7 @@ def get_updates(url: str) -> Any:
     """
 
     r = requests.get(url)
+    print(r)
     json = r.json()
     print("From server:", json)
     return json

@@ -107,7 +107,11 @@ class WizardWidget(QtWidgets.QWidget):
     def send_to_backend(self):
         req_type = "room_plugin" if self.use_plugin else "room_final"
 
-        data = self.fetch_json() if not self.use_plugin else {"plugin": self.plugin_file.get_data()[1], "room": self.fetch_json()}
+        data = self.fetch_json() if not self.use_plugin else \
+            {
+                "plugin": self.plugin_file.get_data()[1],
+                "room": self.fetch_json()
+            }
 
         to_send = str({"type": req_type, "data": data}).replace("\'", "\"")
         print(to_send)

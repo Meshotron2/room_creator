@@ -30,12 +30,12 @@ class NodeWidget(QtWidgets.QWidget):
         self.info_layout.addWidget(InfoWidget("total ram: ", str(node_dict["totalRam"])), 1, 1, 1, 1)
         self.info_layout.addWidget(InfoWidget("used ram: ", str(node_dict["usedRam"])), 1, 2, 1, 1)
 
-        self.info_layout.addWidget(InfoWidget("send time: ", str(node_dict["sendTime"])), 2, 0, 1, 1)
-        self.info_layout.addWidget(InfoWidget("receive time: ", str(node_dict["receiveTime"])), 2, 1, 1, 1)
-        self.info_layout.addWidget(InfoWidget("scatter time: ", str(node_dict["scatterTime"])), 2, 2, 1, 1)
-        self.info_layout.addWidget(InfoWidget("delay time: ", str(node_dict["delayTime"])), 2, 3, 1, 1)
+        # self.info_layout.addWidget(InfoWidget("send time: ", str(node_dict["sendTime"])), 2, 0, 1, 1)
+        # self.info_layout.addWidget(InfoWidget("receive time: ", str(node_dict["receiveTime"])), 2, 1, 1, 1)
+        # self.info_layout.addWidget(InfoWidget("scatter time: ", str(node_dict["scatterTime"])), 2, 2, 1, 1)
+        # self.info_layout.addWidget(InfoWidget("delay time: ", str(node_dict["delayTime"])), 2, 3, 1, 1)
 
-        self.info_layout.addWidget(InfoWidget("temperatures: ", str(node_dict["temperature"])), 3, 0, 1, 1)
+        self.info_layout.addWidget(InfoWidget("temperatures: ", str(node_dict["temperature"])), 2, 0, 1, 1)
 
         self.layout.addLayout(self.info_layout)
 

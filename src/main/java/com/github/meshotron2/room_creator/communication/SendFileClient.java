@@ -29,7 +29,7 @@ public interface SendFileClient {
         final File file = new File(path);
         final FileInputStream fileInputStream = new FileInputStream(file);
 
-
+        dataOutputStream.writeByte(0x0);
         dataOutputStream.writeLong(file.length());
 
         final byte[] buffer = new byte[4 * 1024];

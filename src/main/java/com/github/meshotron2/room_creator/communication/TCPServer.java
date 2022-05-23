@@ -12,12 +12,18 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * with help from
+ * Server to communicate with the GUI.
+ *
+ * This server receives the requests sent by the GUI. Those can be
+ * <ul>
+ *     <li>room descriptions</li>
+ *     <li>room descriptions and plugin to use</li>
+ * </ul>
+ *
+ * With help from
  * <ul>
  * <li><a href=https://www.codejava.net/java-se/networking/java-socket-server-examples-tcp-ip>codejava.net</a></li>
  * <li><a href=https://www.geeksforgeeks.org/multithreading-in-java/>geeksforgeeks.com</a></li>
@@ -26,7 +32,13 @@ import java.util.stream.Collectors;
  */
 public class TCPServer extends Thread {
 
+    /**
+     * Port to bind the server to
+     */
     private final int port;
+    /**
+     * The plugin manager to process the room
+     */
     private final PluginManager pluginManager;
 
     public TCPServer(int port, PluginManager pluginManager) {

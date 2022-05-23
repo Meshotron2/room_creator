@@ -1,16 +1,25 @@
 package com.github.meshotron2.room_creator.communication;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.net.Socket;
 
+/**
+ * Set of methods to send files.
+ * <p>
+ * The protocol implemented sends 0x0 (signifying a file transfer),
+ * followed by 64 bits (long) encoding the size and then the file's bytes.
+ */
 public interface SendFileClient {
 
-    static void main(String[] args) {
-        send("final_test.dwm");
-    }
+//    static void main(String[] args) {
+//        send("final_test.dwm");
+//    }
 
+    /**
+     * Sends a file
+     *
+     * @param fileName the name of the file to send
+     */
     static void send(String fileName) {
         System.out.println("SEND");
         try (final Socket socket = new Socket("127.0.0.1", 5000)) {
@@ -24,7 +33,14 @@ public interface SendFileClient {
         }
     }
 
-    private static void sendFile(String path, DataOutputStream dataOutputStream) throws Exception {
+    /**
+     * Sends a file to a specific output stream.
+     *
+     * @param path the path were the file is located.
+     * @param dataOutputStream the output stream to send the file to
+     * @throws IOException when errors happen on file/output stream handling
+     */
+    private static void sendFile(String path, DataOutputStream dataOutputStream) throws IOException {
         int bytes;
         final File file = new File(path);
         final FileInputStream fileInputStream = new FileInputStream(file);

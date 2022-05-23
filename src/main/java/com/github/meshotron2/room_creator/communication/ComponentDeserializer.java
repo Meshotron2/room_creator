@@ -2,10 +2,25 @@ package com.github.meshotron2.room_creator.communication;
 
 import com.google.gson.*;
 
-import javax.swing.*;
+import java.lang.annotation.Documented;
 import java.lang.reflect.Type;
 
+/**
+ * {@link JsonDeserializer} for every {@link RoomComponent} class.
+ *
+ * When adding a new component to the system, {@link ComponentDeserializer#deserialize(JsonElement, Type, JsonDeserializationContext)}
+ * has to be updated accordingly.
+ */
 public class ComponentDeserializer implements JsonDeserializer<RoomComponent> {
+
+    /**
+     * Deserializes every {@link RoomComponent}.
+     *
+     * See {@link JsonDeserializer#deserialize(JsonElement, Type, JsonDeserializationContext)}
+     * for details on the parameters and exceptions.
+     *
+     * @return The deserialized {@link RoomComponent}
+     */
     @Override
     public RoomComponent deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         final JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -21,7 +36,7 @@ public class ComponentDeserializer implements JsonDeserializer<RoomComponent> {
 //        else
             switch (tp.getAsString()) {
                 case "circle":
-                    CircleComponent circleComponent = new CircleComponent(
+                    SphereComponent circleComponent = new SphereComponent(
                             jsonObject.get("centre_x").getAsString(),
                             jsonObject.get("centre_y").getAsString(),
                             jsonObject.get("centre_z").getAsString(),

@@ -3,8 +3,15 @@ package com.github.meshotron2.room_creator.communication;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
-import java.util.List;
 
+/**
+ * Deserializes every {@link Request} this program can receive.
+ *
+ * Please refer to {@link Request}'s documentation to learn more about how to represent requests internally
+ *
+ * It is not likely that changes are needed when creating a new Request type.
+ * When an unidentified request type is parsed it will return a {@code Request<Object>}.
+ */
 public class RequestDeserializer implements JsonDeserializer<Request<?>> {
     @Override
     public Request<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
@@ -29,9 +36,9 @@ public class RequestDeserializer implements JsonDeserializer<Request<?>> {
                 ));
                 System.out.println(pluginAndRoomRequest);
                 return pluginAndRoomRequest;
+            default:
+                return new Request<>(reqType, jsonDeserializationContext.deserialize(o.get("data"), Object.class));
         }
-
-        return null;
     }
 }
 

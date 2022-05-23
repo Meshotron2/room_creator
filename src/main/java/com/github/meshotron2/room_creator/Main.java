@@ -5,9 +5,12 @@ import com.github.meshotron2.room_creator.plugins.PluginManager;
 
 import java.io.IOException;
 
+/**
+ * This program receives room descriptions from the GUI, creates dwm files and sends them to the partitioner.
+ *
+ * It can create rooms using plugins or the native method (using the GUI's file creation wizard).
+ */
 public class Main {
-    public static final String PROMPT = "> ";
-
     public static void main(String[] args) throws IOException {
         new Thread(new TCPServer(9999, new PluginManager())).start();
 

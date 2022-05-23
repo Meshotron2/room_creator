@@ -1,14 +1,51 @@
 package com.github.meshotron2.room_creator.communication;
 
+/**
+ * Describes a Cuboid given 2 points.
+ */
 public class CuboidComponent implements RoomComponent {
+    /**
+     * First pont's x coordinate
+     */
     private String x1;
+    /**
+     * First pont's y coordinate
+     */
     private String y1;
+    /**
+     * First pont's z coordinate
+     */
     private String z1;
+    /**
+     * Second pont's x coordinate
+     */
     private String x2;
+    /**
+     * Second pont's y coordinate
+     */
     private String y2;
+    /**
+     * Second pont's z coordinate
+     */
     private String z2;
+    /**
+     * The refraction coefficient.
+     * <p>
+     * See the official dmw specification for possible values
+     */
     private char c;
 
+    /**
+     * Constructs the component.
+     *
+     * @param x1 First pont's x coordinate
+     * @param y1 First pont's y coordinate
+     * @param z1 First pont's z coordinate
+     * @param x2 Second pont's x coordinate
+     * @param y2 Second pont's y coordinate
+     * @param z2 Second pont's z coordinate
+     * @param c The refraction coefficient.
+     */
     public CuboidComponent(String x1, String y1, String z1, String x2, String y2, String z2, String c) {
         this.x1 = x1;
         this.y1 = y1;

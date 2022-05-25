@@ -15,9 +15,12 @@ class WidgetWLabel(QtWidgets.QWidget):
 
 
 class TextEditWLabel(WidgetWLabel):
-    def __init__(self, label: str, value: str = ""):
+    def __init__(self, label: str, value: str = "", editingDoneCallback=None):
         self.text_box = QtWidgets.QLineEdit()
         self.text_box.setText(value)
+
+        if editingDoneCallback is not None:
+            self.text_box.editingFinished.connect(editingDoneCallback)
 
         super().__init__(label, self.text_box)
 

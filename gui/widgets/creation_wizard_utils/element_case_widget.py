@@ -13,8 +13,10 @@ shapes = {
 
 
 class ElementCaseWidget(QtWidgets.QWidget):
-    def __init__(self, box_id: str, data: dict[str, str] = None):
+    def __init__(self, box_id: str, data: dict[str, str] = None, editingDoneCallback = None):
         super().__init__()
+
+        self.editingDoneCallback = editingDoneCallback
 
         self.box_id = box_id
         self.ws: list[TextEditWLabel] = []
@@ -60,12 +62,12 @@ class ElementCaseWidget(QtWidgets.QWidget):
         mid = int(len(to_add) / 2)
 
         for k, v in to_add[0:mid]:
-            w_label = TextEditWLabel(k, v)
+            w_label = TextEditWLabel(k, v, self.editingDoneCallback)
             self.ws.append(w_label)
             self.left.addWidget(w_label)
 
         for k, v in to_add[mid:len(to_add)]:
-            w_label = TextEditWLabel(k, v)
+            w_label = TextEditWLabel(k, v, self.editingDoneCallback)
             self.ws.append(w_label)
             self.right.addWidget(w_label)
 
@@ -92,12 +94,12 @@ class ElementCaseWidget(QtWidgets.QWidget):
         mid = int(len(to_add) / 2)
 
         for v in to_add[0:mid]:
-            w_label = TextEditWLabel(v)
+            w_label = TextEditWLabel(v, editingDoneCallback=self.editingDoneCallback)
             self.ws.append(w_label)
             self.left.addWidget(w_label)
 
         for v in to_add[mid:len(to_add)]:
-            w_label = TextEditWLabel(v)
+            w_label = TextEditWLabel(v, editingDoneCallback=self.editingDoneCallback)
             self.ws.append(w_label)
             self.right.addWidget(w_label)
 

@@ -1,4 +1,5 @@
 import json
+import subprocess
 
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import Qt
@@ -27,10 +28,10 @@ class WizardWidget(QtWidgets.QWidget):
         self.title_layout.addWidget(self.title)
 
         # header_layout
-        self.h_x = TextEditWLabel("x")
-        self.h_y = TextEditWLabel("y")
-        self.h_z = TextEditWLabel("z")
-        self.h_f = TextEditWLabel("f")
+        self.h_x = TextEditWLabel("x", editingDoneCallback=self.roomUpdated)
+        self.h_y = TextEditWLabel("y", editingDoneCallback=self.roomUpdated)
+        self.h_z = TextEditWLabel("z", editingDoneCallback=self.roomUpdated)
+        self.h_f = TextEditWLabel("f", editingDoneCallback=self.roomUpdated)
         self.h_file = TextEditWLabel("file")
 
         self.h_left = QtWidgets.QVBoxLayout(self)
@@ -93,12 +94,30 @@ class WizardWidget(QtWidgets.QWidget):
                 print(type(room["shapes"][rc]), room["shapes"][rc])
                 self.add_widget_slot(room["shapes"][rc])
 
+        self.room_visualizer = subprocess.Popen(["matlab", "-nodesktop", "-nosplash", "-r", "run room_visualizer.m"], stdin=subprocess.PIPE)
+
+    def roomUpdated(self):
+        req_type = "room_plugin" if self.use_plugin else "room_final"
+
+        data = self.fetch_json() if not self.use_plugin else \
+            {
+                "plugin": self.plugin_file.get_data()[1],
+                "room": self.fetch_json()
+            }
+
+        to_send = str({"type": req_type, "data": data}).replace("\'", "\"")
+        jo = json.loads(to_send)
+
+        f = open("room.txt", "w")
+        f.write(json.dumps(jo, indent=4))
+        f.close()
+
     @QtCore.Slot()
     def add_shape_action(self):
         self.add_widget_slot()
 
     def add_widget_slot(self, data: dict[str, str] = None):
-        widget = ElementCaseWidget(str(len(self.shapes)), data)
+        widget = ElementCaseWidget(str(len(self.shapes)), data, self.roomUpdated)
         self.shapes.append(widget)
         self.customizer_layout.addWidget(widget)
         return widget
@@ -135,3 +154,8 @@ class WizardWidget(QtWidgets.QWidget):
             data["plugin_file"] = self.plugin_file.get_data()[1]
 
         return data
+
+    def closeEvent(self, e):
+        self.room_visualizer.kill()
+        self.room_visualizer.wait()
+        e.accept()

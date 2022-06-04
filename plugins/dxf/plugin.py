@@ -1,112 +1,96 @@
 import sys
+import json
 
 import ezdxf
 from ezdxf.entities import DXFEntity, Face3d
 
-coordinate = (int, int, int)
+import numpy as np
+from itertools import combinations
+
+from scipy.spatial import Delaunay
+
+import mesh_raycast
+
+triangle = (int, int, int)
 
 
-class Node:
-
-    def __init__(self, value, children: list):
-        self.value = value
-        self.children = children
-
-    def __eq__(self, other):
-        if isinstance(self.value, type(other)):
-            return self.value == other
-        if not isinstance(other, Node):
-            return False
-        return self.value == other.value
-
-    def __str__(self):
-        # return "[" + str(self.value) + "]: [" + str(["\n- " + str(n.value) for n in self.children]) + "]"
-        # return f"[{str(self.value)}]: [{str(["""- {str(n.value)}""" for n in self.children])}]"
-
-        s = "\t[" + str(self.value) + "]: [\n\t\t" + "\n\t\t".join(
-            [f"- {str(n.value)}" for n in self.children]) + "\n\t] "
-        return s
+def touch(t1, t2):
+    cnt = 0
+    for v1 in t1:
+        for v2 in t2:
+            if v1 == v2:
+                cnt += 1
+    return cnt == 2
 
 
-nodes: list[Node] = []
+def buildHull(hull, triangles, t):
+    for tri in findAllTriaglesThatTouch(t, triangles):
+        if tri not in hull:
+            hull.add(tri)
+            buildHull(hull, triangles, tri)
 
 
-def link(a: coordinate, b: coordinate):
-    n1 = Node(a, [])
-    n2 = Node(b, [])
+def buildHulls(triangles: list):
+    triangles_cpy = triangles.copy()
 
-    found_n1, found_n2 = False, False
-    for i in range(len(nodes)):
-        if nodes[i].value == a:
-            n1 = nodes[i]
-            found_n1 = True
-        elif nodes[i].value == b:
-            n2 = nodes[i]
-            found_n2 = True
+    hulls = []
+    while len(triangles_cpy) > 0:
+        hull = set()
+        buildHull(hull, triangles_cpy, triangles_cpy[0])
 
-    if not found_n1:
-        nodes.append(n1)
-    if not found_n2:
-        nodes.append(n2)
+        hulls.append(hull)
 
-    if n1 not in n2.children and n2 not in n1.children:
-        n1.children.append(n2)
+        for v in hull:
+            triangles_cpy.remove(v)
 
+    return hulls
 
-def clean() -> list[list[coordinate]]:
-    to_rm = []
+    # hull = set()
+    # buildHull(hull, triangles, triangles[0])
+    # print(hull)
+    # print(len(hull))
 
-
-def agregate() -> list[coordinate]:
-    l = nodes.copy()
-    removed = True
-    while removed:
-        removed = False
-        for v in l:
-            if len(v.children) < 3:
-                removed = True
-                l.remove(v)
-
-    return l
+    # hull2 = set()
+    # buildHull(hull2, triangles, triangles[23])
+    # print(hull2)
+    # print(len(hull2))
 
 
-def tests():
-    try:
-        doc = ezdxf.readfile(sys.argv[1])
-        msp = doc.modelspace()
+def findAllTriaglesThatTouch(tri, triangles):
+    touching = []
 
-        lines = msp.query("LINE").groupby("color").get(1, [])
+    for t in triangles:
+        if tri != t:
+            if touch(tri, t):
+                touching.append(t)
+    return touching
 
-        for l in lines:
-            print(l)
-    except IOError:
-        print(f"Not a DXF file or a generic I/O error.")
-        sys.exit(1)
-    except ezdxf.DXFStructureError:
-        print(f"Invalid or corrupted DXF file.")
-        sys.exit(2)
+
+def in_hull(p, hull):
+    """
+    Test if points in `p` are in `hull`
+
+    `p` should be a `NxK` coordinates of `N` points in `K` dimensions
+    `hull` is either a scipy.spatial.Delaunay object or the `MxK` array of the 
+    coordinates of `M` points in `K`dimensions for which Delaunay triangulation
+    will be computed
+    """
+    if not isinstance(hull, Delaunay):
+        hull = Delaunay(hull)
+
+    return hull.find_simplex(p) >= 0
 
 
 def process_3d_face(e: Face3d):
-    # vtx = list({e.dxf.vtx0, e.dxf.vtx1, e.dxf.vtx2, e.dxf.vtx3})
-    vtx = [e.dxf.vtx0, e.dxf.vtx1, e.dxf.vtx2, e.dxf.vtx3]
-    # res = []
-    # for i in vtx:
-    #     if i not in res:
-    #         res.append(i)
-
-    res = vtx
-    print([str(r) for r in res])
-    # if len(res) != 3:
-    #     print("FAILURE!")
-    #     exit(-1)
-    link(res[1], res[0])
-    link(res[1], res[2])
+    if e.dxf.vtx2 != e.dxf.vtx3:  # not a triangle
+        return (e.dxf.vtx0, e.dxf.vtx1, e.dxf.vtx2), (e.dxf.vtx0, e.dxf.vtx2, e.dxf.vtx3)
+    else:
+        return (e.dxf.vtx0, e.dxf.vtx1, e.dxf.vtx2)
 
 
 def process_entity(e: DXFEntity):
     if e.dxftype() == "3DFACE":
-        process_3d_face(e)
+        return process_3d_face(e)
 
 
 def read_room(room: str):
@@ -131,66 +115,99 @@ def read_room(room: str):
         sys.exit(2)
 
     msp = doc.modelspace()
+    triangles: list[triangle] = []
     for e in msp:
-        process_entity(e)
+        res = process_entity(e)
+        if len(res) == 2:
+            triangles.append(res[0])
+            triangles.append(res[1])
+        else:
+            triangles.append(res)
+
+    hulls = buildHulls(triangles)
+
+    return hulls
+    # print(hulls)
+    #
+    # for shape in hulls:
+    #     shape_arr = [vec for vec in shape]
+    #     # print("---")
+    #     # print(shape_arr)
+    #     # print("---")
+    #     mesh = np.array(shape_arr, dtype='f4')
+    #     strt = -3
+    #     step = 0.1
+    #     for x in [strt + (x * step) for x in range(0, int(3 / step))]:
+    #         for y in [strt + (x * step) for x in range(0, int(3 / step))]:
+    #             for z in [strt + (x * step) for x in range(0, int(3 / step))]:
+    #                 result = mesh_raycast.raycast(source=(x, y, z), direction=(0.0, 0.0, -1.0),
+    #                                               mesh=mesh)
+    #                 # ímpar => dentro
+    #                 # print(f"({str(x)[:5]},{str(y)[:5]},{str(z)[:5]})\t{(len(result) % 2 != 0)}")
+    #                 assert (len(result) % 2 != 0) == (-1 <= x <= 1 and -1 <= z < 1 and -1 <= y < 1)
+    # sys.exit(1)
 
 
 if __name__ == '__main__':
-    read_room("cube.dxf")
-    l = agregate()
-    print("\n\t".join([str(n) for n in nodes]))
-    print("\n\t".join([str(n) for n in l]))
-    # class Cube:
-    #     def __init__(self, a: coordinate, b: coordinate, c: coordinate, d: coordinate, e: coordinate, f: coordinate,
-    #                  g: coordinate, h: coordinate):
-    #         link(a, d)
-    #         link(a, b)
-    #         link(a, f)
-    #
-    #         link(b, a)
-    #         link(b, c)
-    #         link(b, g)
-    #
-    #         link(c, b)
-    #         link(c, d)
-    #         link(c, h)
-    #
-    #         link(d, a)
-    #         link(d, c)
-    #         link(d, e)
-    #
-    #         link(e, d)
-    #         link(e, f)
-    #         link(e, h)
-    #
-    #         link(f, a)
-    #         link(f, e)
-    #         link(f, g)
-    #
-    #         link(g, f)
-    #         link(g, b)
-    #         link(g, h)
-    #
-    #         link(h, c)
-    #         link(h, e)
-    #         link(h, g)
-    #
-    #     def __str__(self):
-    #         return "Cube {\n" + "\n\t".join([str(n) for n in nodes]) + "\n}"
-    #
-    #
-    # link((1, 0, 1), (-1, -1, -1))
-    #
-    # Cube(
-    #     (1, 0, 1),  # a
-    #     (1, 1, 1),  # b
-    #     (0, 1, 1),  # c
-    #     (0, 0, 1),  # d
-    #     (0, 0, 0),  # e
-    #     (1, 0, 0),  # f
-    #     (1, 1, 0),  # g
-    #     (0, 1, 0)  # h
-    # )
-    #
-    # l = agregate()
-    # print("\n\t".join([str(n) for n in l]))
+    args = sys.argv
+
+    if args[1] == 'lm':
+        hulls = read_room("cube.dxf")
+
+        shapes = {}
+        i = 0
+        for shape in hulls:
+            s_name = f"shape_{i}"
+            shapes[s_name] = {
+                "coefficient": 0
+            }
+
+            i1 = 0
+            for triangle in shape:
+                pt0 = [triangle[0][0], triangle[0][1], triangle[0][2]]
+                pt1 = [triangle[1][0], triangle[1][1], triangle[1][2]]
+                pt2 = [triangle[2][0], triangle[2][1], triangle[2][2]]
+
+                shapes[s_name][f'tri_{i1}'] = [pt0, pt1, pt2]
+                i1 += 1
+
+            i += 1
+
+        data = {
+            "xg": "",
+            "yg": "",
+            "zg": "",
+            "f": "",
+            "file": "./dwm/plugin.dwm",
+            "shapes": shapes
+        }
+
+        print(str(data))
+
+    elif args[1] == 'dwm':
+        print(''.join(args[2:]))
+        shapes = json.loads(''.join(args[2:]))['shapes']
+
+        for k in shapes:
+            triangles = []
+            coef = shapes[k]['coefficient']
+            for k1 in shapes[k]:
+                if k1 != 'coefficient':
+                    triangles.append(shapes[k][k1])
+            mesh = np.array(triangles, dtype='f4')
+            # print(mesh)
+
+            strt = -2
+            step = 0.2
+            for x in [strt + (x * step) for x in range(0, int(2 / step))]:
+                for y in [strt + (x * step) for x in range(0, int(2 / step))]:
+                    for z in [strt + (x * step) for x in range(0, int(2 / step))]:
+                        result = mesh_raycast.raycast(source=(x, y, z), direction=(0.0, 0.0, -1.0),
+                                                      mesh=mesh)
+                        # ímpar => dentro
+                        # print(f"({str(x)[:5]},{str(y)[:5]},{str(z)[:5]})\t{(len(result) % 2 != 0)}")
+                        if not (len(result) % 2 != 0) == (-1 <= x <= 1 and -1 <= z < 1 and -1 <= y < 1):
+                            print(f"({str(x)[:5]},{str(y)[:5]},{str(z)[:5]})\t{(len(result) % 2 != 0)}")
+
+                        # if len(result) % 2 != 0:
+                        #     print(coef)

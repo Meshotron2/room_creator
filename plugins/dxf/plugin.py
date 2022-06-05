@@ -186,7 +186,8 @@ if __name__ == '__main__':
 
     elif args[1] == 'dwm':
         print(''.join(args[2:]))
-        shapes = json.loads(''.join(args[2:]))['shapes']
+        json_room = json.loads(''.join(args[2:]))
+        shapes = json_room['shapes']
 
         for k in shapes:
             triangles = []
@@ -197,17 +198,42 @@ if __name__ == '__main__':
             mesh = np.array(triangles, dtype='f4')
             # print(mesh)
 
-            strt = -2
-            step = 0.2
-            for x in [strt + (x * step) for x in range(0, int(2 / step))]:
-                for y in [strt + (x * step) for x in range(0, int(2 / step))]:
-                    for z in [strt + (x * step) for x in range(0, int(2 / step))]:
+            xg = int(json_room['xg'])
+            yg = int(json_room['yg'])
+            zg = int(json_room['zg'])
+            room = [' '] * (xg * yg * zg)
+
+            for x in range(xg):
+                for y in range(yg):
+                    for z in range(zg):
                         result = mesh_raycast.raycast(source=(x, y, z), direction=(0.0, 0.0, -1.0),
                                                       mesh=mesh)
                         # ímpar => dentro
                         # print(f"({str(x)[:5]},{str(y)[:5]},{str(z)[:5]})\t{(len(result) % 2 != 0)}")
-                        if not (len(result) % 2 != 0) == (-1 <= x <= 1 and -1 <= z < 1 and -1 <= y < 1):
-                            print(f"({str(x)[:5]},{str(y)[:5]},{str(z)[:5]})\t{(len(result) % 2 != 0)}")
+                        # if not (len(result) % 2 != 0) == (-1 <= x <= 1 and -1 <= z < 1 and -1 <= y < 1):
+                        #     print(f"({str(x)[:5]},{str(y)[:5]},{str(z)[:5]})\t{(len(result) % 2 != 0)}")
 
-                        # if len(result) % 2 != 0:
-                        #     print(coef)
+                        if len(result) % 2 != 0:
+                            room[4 * 4 + (x * yg * zg) + (y * zg) + z] = coef
+
+            with open("result.dwm", 'wb') as f:
+                f.write(xg.to_bytes(2, 'big'))
+                f.write(yg.to_bytes(2, 'big'))
+                f.write(zg.to_bytes(2, 'big'))
+                f.write(int(json_room['f']).to_bytes(4, 'big'))
+                f.write(''.join(room).encode('ASCII'))
+
+            # strt = -2
+            # step = 0.2
+            # for x in [strt + (x * step) for x in range(0, int(2 / step))]:
+            #     for y in [strt + (x * step) for x in range(0, int(2 / step))]:
+            #         for z in [strt + (x * step) for x in range(0, int(2 / step))]:
+            #             result = mesh_raycast.raycast(source=(x, y, z), direction=(0.0, 0.0, -1.0),
+            #                                           mesh=mesh)
+            #             # ímpar => dentro
+            #             # print(f"({str(x)[:5]},{str(y)[:5]},{str(z)[:5]})\t{(len(result) % 2 != 0)}")
+            #             if not (len(result) % 2 != 0) == (-1 <= x <= 1 and -1 <= z < 1 and -1 <= y < 1):
+            #                 print(f"({str(x)[:5]},{str(y)[:5]},{str(z)[:5]})\t{(len(result) % 2 != 0)}")
+            #
+            #             # if len(result) % 2 != 0:
+            #             #     print(coef)

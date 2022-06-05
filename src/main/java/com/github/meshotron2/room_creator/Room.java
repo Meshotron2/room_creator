@@ -174,9 +174,9 @@ public class Room {
      */
     public void doSphere(int x, int y, int z, int r, char n) throws IOException {
 //        startWrite();
-        for (int x2 = 0; x2 <= x; x2++) {
-            for (int y2 = 0; y2 <= y; y2++) {
-                for (int z2 = 0; z2 <= z; z2++)
+        for (int x2 = r-x; x2 <= r+x; x2++) {
+            for (int y2 = r-y; y2 <= r+y; y2++) {
+                for (int z2 = r-z; z2 <= r+z; z2++)
                     if (dist(x, x2, y, y2, z, z2) <= r)
                         writeNode(n, x2, y2, z2); // nodes[x2][y2][z2] = n;
 //                    else

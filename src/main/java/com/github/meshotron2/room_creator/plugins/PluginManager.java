@@ -91,7 +91,6 @@ public class PluginManager {
         if (!getPlugins().contains(plugin))
             return "";
 
-        // TODO: 2/23/22 Allow for different order of parameters
 //        final String command = String.format(config.getPlugin(plugin).getMapToDwm(), plugin, data);
         final String command = config.getPlugin(plugin).getMapToDwm()
                 .replaceAll("%script_file%", plugin)

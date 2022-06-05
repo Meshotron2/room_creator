@@ -3,10 +3,10 @@ import subprocess
 
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import Qt
-
+from PySide6.QtWidgets import QMessageBox, QComboBox
 from comunication import tcp_client
 from widgets.creation_wizard_utils.element_case_widget import ElementCaseWidget
-from widgets.creation_wizard_utils.labeled_widgets import TextEditWLabel
+from widgets.creation_wizard_utils.labeled_widgets import ComboBoxWLabel, TextEditWLabel
 
 
 class WizardWidget(QtWidgets.QWidget):
@@ -26,14 +26,15 @@ class WizardWidget(QtWidgets.QWidget):
         self.title = QtWidgets.QLabel("Room creation wizard", alignment=QtCore.Qt.AlignCenter)
 
         self.title_layout.addWidget(self.title)
-
+        
+        values = ["8000","11025","16000","22050","44100","48000"]
         # header_layout
-        self.h_x = TextEditWLabel("x", editingDoneCallback=self.roomUpdated)
-        self.h_y = TextEditWLabel("y", editingDoneCallback=self.roomUpdated)
-        self.h_z = TextEditWLabel("z", editingDoneCallback=self.roomUpdated)
-        self.h_f = TextEditWLabel("f", editingDoneCallback=self.roomUpdated)
+        self.h_x = TextEditWLabel("x(m)", editingDoneCallback=self.roomUpdated)
+        self.h_y = TextEditWLabel("y(m)", editingDoneCallback=self.roomUpdated)
+        self.h_z = TextEditWLabel("z(m)", editingDoneCallback=self.roomUpdated)
+        # self.h_f = TextEditWLabel("f(Hz)", editingDoneCallback=self.roomUpdated)
+        self.h_f = ComboBoxWLabel("f(Hz)", values, editingDoneCallback=self.roomUpdated)
         self.h_file = TextEditWLabel("file")
-
         self.h_left = QtWidgets.QVBoxLayout(self)
         self.h_right = QtWidgets.QVBoxLayout(self)
 
@@ -94,7 +95,7 @@ class WizardWidget(QtWidgets.QWidget):
                 print(type(room["shapes"][rc]), room["shapes"][rc])
                 self.add_widget_slot(room["shapes"][rc])
 
-        self.room_visualizer = subprocess.Popen(["matlab", "-nodesktop", "-nosplash", "-r", "run room_visualizer.m"], stdin=subprocess.PIPE)
+        # self.room_visualizer = subprocess.Popen(["matlab", "-nodesktop", "-nosplash", "-r", "run room_visualizer.m"], stdin=subprocess.PIPE)
 
     def roomUpdated(self):
         req_type = "room_plugin" if self.use_plugin else "room_final"
@@ -122,6 +123,8 @@ class WizardWidget(QtWidgets.QWidget):
         self.customizer_layout.addWidget(widget)
         return widget
 
+   
+
     @QtCore.Slot()
     def send_to_backend(self):
         req_type = "room_plugin" if self.use_plugin else "room_final"
@@ -131,22 +134,25 @@ class WizardWidget(QtWidgets.QWidget):
                 "plugin": self.plugin_file.get_data()[1],
                 "room": self.fetch_json()
             }
+        
+        print(data)
 
-        to_send = str({"type": req_type, "data": data}).replace("\'", "\"")
-        print(to_send)
-        jo = json.loads(to_send)
-        print(json.dumps(jo, indent=4))
-        tcp_client.send(str(jo), wait=self.use_plugin)
+        if(self.data_is_valid(data)):
+            to_send = str({"type": req_type, "data": data}).replace("\'", "\"")
+            jo = json.loads(to_send)
+            print(json.dumps(jo, indent=4))
+            tcp_client.send(str(jo), wait=self.use_plugin)
 
     def fetch_json(self):
+        freq = self.h_f.get_data()[1]
         data = {
-            "xg": self.h_x.get_data()[1],
-            "yg": self.h_y.get_data()[1],
-            "zg": self.h_z.get_data()[1],
-            "f": self.h_f.get_data()[1],
+            "xg": self.h_x.get_data_conv(freq)[1],
+            "yg": self.h_y.get_data_conv(freq)[1],
+            "zg": self.h_z.get_data_conv(freq)[1],
+            "f": freq,
             "file": self.h_file.get_data()[1],
             "shapes": {
-                w.box_id: w.to_json() for w in self.shapes
+                w.box_id: w.to_json(freq) for w in self.shapes
             }
         }
 
@@ -154,8 +160,89 @@ class WizardWidget(QtWidgets.QWidget):
             data["plugin_file"] = self.plugin_file.get_data()[1]
 
         return data
+    
+    def data_is_valid(self, data):   # Verificacao erros
+        x_room = self.is_float(data['xg'])
+        y_room = self.is_float(data['yg'])
+        z_room = self.is_float(data['zg'])
+        count_S = 0
+        count_R = 0
+        if x_room!=None and y_room!=None and z_room!=None:
+            for i in data['shapes']:           
+                s = data['shapes'][i]
+
+                if s['type'] == 'circle':       #Verificacao das coordenadas do objeto
+                    x = self.is_float(s['centre_x'])
+                    y = self.is_float(s['centre_y'])
+                    z = self.is_float(s['centre_z'])
+                    r = self.is_float(s['radius'])
+                    if x!=None and y!=None and z!=None and r!=None:
+                        if x > x_room or y > y_room or z > z_room:
+                            self.error_msg("Shape "+str(i)+" coordenates exceed room limits.")
+                            return False
+                        elif (x + r) > x_room or (x - r) < 0 or (y + r) > y_room or (y - r) < 0 or (z + r) > z_room or (z - r) < 0:
+                            self.error_msg("Shape "+str(i)+" radius exceed room limits.")
+                            return False
+                    else:
+                        self.error_msg("Coordenates must be a numeric value!")
+                        return False
+
+                    if s['code'] == 'S':        # Contagem dos emissores e recetores
+                        count_S += 1
+                    elif s['code'] == 'R':
+                        count_R += 1
+
+                elif s['type'] == 'cuboid':
+                    x1 = self.is_float(s['x1'])
+                    x2 = self.is_float(s['x2'])
+                    y1 = self.is_float(s['y1'])
+                    y2 = self.is_float(s['y2'])
+                    z1 = self.is_float(s['z1'])
+                    z2 = self.is_float(s['z2'])
+                    if x1!=None and y1!=None and z1!=None and x2!=None and y2!=None and z2!=None:
+                        if x1 > x_room or y1 > y_room or z1 > z_room or x2 > x_room or y2 > y_room or z2 > z_room:
+                            self.error_msg("Shape "+str(i)+" coordenates exceed room limits.")
+                            return False
+                    else:
+                        self.error_msg("Coordenates must be a numeric value!")
+                        return False
+
+                    if s['code'] == 'S':        # Contagem dos emissores e recetores
+                        count_S += 1
+                    elif s['code'] == 'R':
+                        count_R += 1
+                        
+        else:
+            self.error_msg("Coordenates must be a numeric value!")
+            return False
+
+        if count_R == 0:
+            self.error_msg("There must be at least one receiver! (code='R')")
+            return False
+        elif count_S == 0:
+            self.error_msg("There must be at least one source! (code='S')")
+            return False
+
+        return True
+
+    def is_float(self, elem):
+        try:
+            elem = float(elem)
+            return elem
+        except ValueError:
+            return None
+
+    def error_msg(self, text):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText("Error")
+        msg.setInformativeText(text)
+        msg.setWindowTitle("Error")
+        msg.exec_()
 
     def closeEvent(self, e):
         self.room_visualizer.kill()
         self.room_visualizer.wait()
         e.accept()
+
+    

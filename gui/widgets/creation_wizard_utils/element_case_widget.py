@@ -3,13 +3,17 @@ from enum import Enum
 
 from PySide6 import QtWidgets, QtCore
 
-from widgets.creation_wizard_utils.labeled_widgets import TextEditWLabel
+from widgets.creation_wizard_utils.labeled_widgets import ComboBoxWLabel, TextEditWLabel
 
 shapes = {
     "Select_type": (),
-    "circle": ("centre_x", "centre_y", "centre_z", "radius", "coefficient"),
-    "cuboid": ("x1", "y1", "z1", "x2", "y2", "z2", "coefficient")
+    "circle": ("centre_x(m)", "centre_y(m)", "centre_z(m)", "radius(m)", "code"),
+    "cuboid": ("x1(m)", "y1(m)", "z1(m)", "x2(m)", "y2(m)", "z2(m)", "code")
+    # "source": ("x(m)", "y(m)", "z(m)"),
+    # "receiver": ("x(m)", "y(m)", "z(m)")
 }
+
+codes = ["S","R","A","B","C","D","E","F","G","H","I","J","1","2","3","4","5","6","7","8","9","Z"]
 
 
 class ElementCaseWidget(QtWidgets.QWidget):
@@ -58,16 +62,22 @@ class ElementCaseWidget(QtWidgets.QWidget):
             if k == "type":
                 continue
             to_add.append((k, data[k]))
-
+        
         mid = int(len(to_add) / 2)
 
         for k, v in to_add[0:mid]:
-            w_label = TextEditWLabel(k, v, self.editingDoneCallback)
+            if k == "code":
+                w_label = ComboBoxWLabel(k, codes, self.editingDoneCallback)
+            else:
+                w_label = TextEditWLabel(k, v, self.editingDoneCallback)
             self.ws.append(w_label)
             self.left.addWidget(w_label)
 
         for k, v in to_add[mid:len(to_add)]:
-            w_label = TextEditWLabel(k, v, self.editingDoneCallback)
+            if k == "code":
+                w_label = ComboBoxWLabel(k, codes, self.editingDoneCallback)
+            else:
+                w_label = TextEditWLabel(k, v, self.editingDoneCallback)
             self.ws.append(w_label)
             self.right.addWidget(w_label)
 
@@ -94,19 +104,28 @@ class ElementCaseWidget(QtWidgets.QWidget):
         mid = int(len(to_add) / 2)
 
         for v in to_add[0:mid]:
-            w_label = TextEditWLabel(v, editingDoneCallback=self.editingDoneCallback)
+            if v == "code":
+                w_label = ComboBoxWLabel(v, codes, editingDoneCallback=self.editingDoneCallback)
+            else:
+                w_label = TextEditWLabel(v, editingDoneCallback=self.editingDoneCallback)
             self.ws.append(w_label)
             self.left.addWidget(w_label)
 
         for v in to_add[mid:len(to_add)]:
-            w_label = TextEditWLabel(v, editingDoneCallback=self.editingDoneCallback)
+            if v == "code":
+                w_label = ComboBoxWLabel(v, codes, editingDoneCallback=self.editingDoneCallback)
+            else:
+                w_label = TextEditWLabel(v, editingDoneCallback=self.editingDoneCallback)
             self.ws.append(w_label)
             self.right.addWidget(w_label)
 
-    def to_json(self):
+    def to_json(self, freq):
         data = {"type": self.combo_box.currentText()}
         for k in self.ws:
-            pair = k.get_data()
+            if isinstance(k, ComboBoxWLabel):
+                pair = k.get_data()
+            else:
+                pair = k.get_data_conv(freq)
             data[pair[0]] = pair[1]
         # data = {
         #     "type": self.combo_box.currentText(),

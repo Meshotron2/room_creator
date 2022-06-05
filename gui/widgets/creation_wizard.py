@@ -135,6 +135,8 @@ class WizardWidget(QtWidgets.QWidget):
                 "room": self.fetch_json()
             }
         
+        print(data)
+
         if(self.data_is_valid(data)):
             to_send = str({"type": req_type, "data": data}).replace("\'", "\"")
             jo = json.loads(to_send)
@@ -168,10 +170,6 @@ class WizardWidget(QtWidgets.QWidget):
         if x_room!=None and y_room!=None and z_room!=None:
             for i in data['shapes']:           
                 s = data['shapes'][i]
-                if s['code'] == 'S':        # Contagem dos emissores e recetores
-                    count_S += 1
-                elif s['code'] == 'R':
-                    count_R += 1
 
                 if s['type'] == 'circle':       #Verificacao das coordenadas do objeto
                     x = self.is_float(s['centre_x'])
@@ -189,6 +187,11 @@ class WizardWidget(QtWidgets.QWidget):
                         self.error_msg("Coordenates must be a numeric value!")
                         return False
 
+                    if s['code'] == 'S':        # Contagem dos emissores e recetores
+                        count_S += 1
+                    elif s['code'] == 'R':
+                        count_R += 1
+
                 elif s['type'] == 'cuboid':
                     x1 = self.is_float(s['x1'])
                     x2 = self.is_float(s['x2'])
@@ -203,6 +206,11 @@ class WizardWidget(QtWidgets.QWidget):
                     else:
                         self.error_msg("Coordenates must be a numeric value!")
                         return False
+
+                    if s['code'] == 'S':        # Contagem dos emissores e recetores
+                        count_S += 1
+                    elif s['code'] == 'R':
+                        count_R += 1
                         
         else:
             self.error_msg("Coordenates must be a numeric value!")

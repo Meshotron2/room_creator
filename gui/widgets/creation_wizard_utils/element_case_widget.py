@@ -7,17 +7,17 @@ from widgets.creation_wizard_utils.labeled_widgets import ComboBoxWLabel, TextEd
 
 shapes = {
     "Select_type": (),
-    "circle": ("centre_x(m)", "centre_y(m)", "centre_z(m)", "radius(m)", "code"),
-    "cuboid": ("x1(m)", "y1(m)", "z1(m)", "x2(m)", "y2(m)", "z2(m)", "code")
+    "circle": ("centre_x(m)", "centre_y(m)", "centre_z(m)", "radius(m)", "coefficient"),
+    "cuboid": ("x1(m)", "y1(m)", "z1(m)", "x2(m)", "y2(m)", "z2(m)", "coefficient")
     # "source": ("x(m)", "y(m)", "z(m)"),
     # "receiver": ("x(m)", "y(m)", "z(m)")
 }
 
-codes = ["S","R","A","B","C","D","E","F","G","H","I","J","1","2","3","4","5","6","7","8","9","Z"]
+codes = ["S", "R", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Z"]
 
 
 class ElementCaseWidget(QtWidgets.QWidget):
-    def __init__(self, box_id: str, data: dict[str, str] = None, editingDoneCallback = None):
+    def __init__(self, box_id: str, data: dict[str, str] = None, editingDoneCallback=None):
         super().__init__()
 
         self.editingDoneCallback = editingDoneCallback
@@ -62,11 +62,11 @@ class ElementCaseWidget(QtWidgets.QWidget):
             if k == "type":
                 continue
             to_add.append((k, data[k]))
-        
+
         mid = int(len(to_add) / 2)
 
         for k, v in to_add[0:mid]:
-            if k == "code":
+            if k == "coefficient":
                 w_label = ComboBoxWLabel(k, codes, self.editingDoneCallback)
             else:
                 w_label = TextEditWLabel(k, v, self.editingDoneCallback)
@@ -74,7 +74,7 @@ class ElementCaseWidget(QtWidgets.QWidget):
             self.left.addWidget(w_label)
 
         for k, v in to_add[mid:len(to_add)]:
-            if k == "code":
+            if k == "coefficient":
                 w_label = ComboBoxWLabel(k, codes, self.editingDoneCallback)
             else:
                 w_label = TextEditWLabel(k, v, self.editingDoneCallback)
@@ -104,7 +104,7 @@ class ElementCaseWidget(QtWidgets.QWidget):
         mid = int(len(to_add) / 2)
 
         for v in to_add[0:mid]:
-            if v == "code":
+            if v == "coefficient":
                 w_label = ComboBoxWLabel(v, codes, editingDoneCallback=self.editingDoneCallback)
             else:
                 w_label = TextEditWLabel(v, editingDoneCallback=self.editingDoneCallback)
@@ -112,7 +112,7 @@ class ElementCaseWidget(QtWidgets.QWidget):
             self.left.addWidget(w_label)
 
         for v in to_add[mid:len(to_add)]:
-            if v == "code":
+            if v == "coefficient":
                 w_label = ComboBoxWLabel(v, codes, editingDoneCallback=self.editingDoneCallback)
             else:
                 w_label = TextEditWLabel(v, editingDoneCallback=self.editingDoneCallback)

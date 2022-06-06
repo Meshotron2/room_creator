@@ -26,8 +26,8 @@ class WizardWidget(QtWidgets.QWidget):
         self.title = QtWidgets.QLabel("Room creation wizard", alignment=QtCore.Qt.AlignCenter)
 
         self.title_layout.addWidget(self.title)
-        
-        values = ["8000","11025","16000","22050","44100","48000"]
+
+        values = ["8000", "11025", "16000", "22050", "44100", "48000"]
         # header_layout
         self.h_x = TextEditWLabel("x(m)", editingDoneCallback=self.roomUpdated)
         self.h_y = TextEditWLabel("y(m)", editingDoneCallback=self.roomUpdated)
@@ -123,8 +123,6 @@ class WizardWidget(QtWidgets.QWidget):
         self.customizer_layout.addWidget(widget)
         return widget
 
-   
-
     @QtCore.Slot()
     def send_to_backend(self):
         req_type = "room_plugin" if self.use_plugin else "room_final"
@@ -134,10 +132,10 @@ class WizardWidget(QtWidgets.QWidget):
                 "plugin": self.plugin_file.get_data()[1],
                 "room": self.fetch_json()
             }
-        
+
         print(data)
 
-        if(self.data_is_valid(data)):
+        if (self.data_is_valid(data)):
             to_send = str({"type": req_type, "data": data}).replace("\'", "\"")
             jo = json.loads(to_send)
             print(json.dumps(jo, indent=4))
@@ -160,36 +158,37 @@ class WizardWidget(QtWidgets.QWidget):
             data["plugin_file"] = self.plugin_file.get_data()[1]
 
         return data
-    
-    def data_is_valid(self, data):   # Verificacao erros
+
+    def data_is_valid(self, data):  # Verificacao erros
         x_room = self.is_float(data['xg'])
         y_room = self.is_float(data['yg'])
         z_room = self.is_float(data['zg'])
         count_S = 0
         count_R = 0
-        if x_room!=None and y_room!=None and z_room!=None:
-            for i in data['shapes']:           
+        if x_room != None and y_room != None and z_room != None:
+            for i in data['shapes']:
                 s = data['shapes'][i]
 
-                if s['type'] == 'circle':       #Verificacao das coordenadas do objeto
+                if s['type'] == 'circle':  # Verificacao das coordenadas do objeto
                     x = self.is_float(s['centre_x'])
                     y = self.is_float(s['centre_y'])
                     z = self.is_float(s['centre_z'])
                     r = self.is_float(s['radius'])
-                    if x!=None and y!=None and z!=None and r!=None:
+                    if x != None and y != None and z != None and r != None:
                         if x > x_room or y > y_room or z > z_room:
-                            self.error_msg("Shape "+str(i)+" coordenates exceed room limits.")
+                            self.error_msg("Shape " + str(i) + " coordenates exceed room limits.")
                             return False
-                        elif (x + r) > x_room or (x - r) < 0 or (y + r) > y_room or (y - r) < 0 or (z + r) > z_room or (z - r) < 0:
-                            self.error_msg("Shape "+str(i)+" radius exceed room limits.")
+                        elif (x + r) > x_room or (x - r) < 0 or (y + r) > y_room or (y - r) < 0 or (z + r) > z_room or (
+                                z - r) < 0:
+                            self.error_msg("Shape " + str(i) + " radius exceed room limits.")
                             return False
                     else:
                         self.error_msg("Coordenates must be a numeric value!")
                         return False
 
-                    if s['code'] == 'S':        # Contagem dos emissores e recetores
+                    if s['coefficient'] == 'S':  # Contagem dos emissores e recetores
                         count_S += 1
-                    elif s['code'] == 'R':
+                    elif s['coefficient'] == 'R':
                         count_R += 1
 
                 elif s['type'] == 'cuboid':
@@ -199,28 +198,28 @@ class WizardWidget(QtWidgets.QWidget):
                     y2 = self.is_float(s['y2'])
                     z1 = self.is_float(s['z1'])
                     z2 = self.is_float(s['z2'])
-                    if x1!=None and y1!=None and z1!=None and x2!=None and y2!=None and z2!=None:
+                    if x1 != None and y1 != None and z1 != None and x2 != None and y2 != None and z2 != None:
                         if x1 > x_room or y1 > y_room or z1 > z_room or x2 > x_room or y2 > y_room or z2 > z_room:
-                            self.error_msg("Shape "+str(i)+" coordenates exceed room limits.")
+                            self.error_msg("Shape " + str(i) + " coordenates exceed room limits.")
                             return False
                     else:
                         self.error_msg("Coordenates must be a numeric value!")
                         return False
 
-                    if s['code'] == 'S':        # Contagem dos emissores e recetores
+                    if s['coefficient'] == 'S':  # Contagem dos emissores e recetores
                         count_S += 1
-                    elif s['code'] == 'R':
+                    elif s['coefficient'] == 'R':
                         count_R += 1
-                        
+
         else:
-            self.error_msg("Coordenates must be a numeric value!")
+            self.error_msg("Coordinates must be a numeric value!")
             return False
 
         if count_R == 0:
-            self.error_msg("There must be at least one receiver! (code='R')")
+            self.error_msg("There must be at least one receiver! (coefficient='R')")
             return False
         elif count_S == 0:
-            self.error_msg("There must be at least one source! (code='S')")
+            self.error_msg("There must be at least one source! (coefficient='S')")
             return False
 
         return True
@@ -244,5 +243,3 @@ class WizardWidget(QtWidgets.QWidget):
         self.room_visualizer.kill()
         self.room_visualizer.wait()
         e.accept()
-
-    

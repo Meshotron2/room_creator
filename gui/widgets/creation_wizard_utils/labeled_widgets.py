@@ -2,6 +2,7 @@ from PySide6 import QtWidgets
 from PySide6.QtCore import Qt
 import math
 
+
 class WidgetWLabel(QtWidgets.QWidget):
     def __init__(self, label: str, widget: QtWidgets.QWidget):
         super().__init__()
@@ -27,7 +28,7 @@ class TextEditWLabel(WidgetWLabel):
     def get_data_conv(self, freq):
         value = self.text_box.text()
         if value.isnumeric() and freq.isnumeric():
-            value = str((int(value) * int(freq)) / (344 * math.sqrt(3)))      # conversao para nós
+            value = str(abs((int(value) * int(freq)) / (344 * math.sqrt(3))))  # conversao para nós
         return self.replace_label(self.label.text()), value
 
     def get_data(self):
@@ -52,6 +53,7 @@ class InfoWidget(WidgetWLabel):
     def flags(self, _index):
         return Qt.ItemIsEnabled
 
+
 class ComboBoxWLabel(WidgetWLabel):
     def __init__(self, label: str, items, editingDoneCallback=None):
         self.combo_box = QtWidgets.QComboBox()
@@ -62,7 +64,7 @@ class ComboBoxWLabel(WidgetWLabel):
             self.combo_box.currentTextChanged.connect(editingDoneCallback)
 
         super().__init__(label, self.combo_box)
-    
+
     def get_data(self):
         return self.replace_label(self.label.text()), self.combo_box.currentText()
 

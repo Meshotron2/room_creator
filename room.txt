@@ -1,0 +1,34 @@
+{
+    "type": "room_final",
+    "data": {
+        "xg": "134",
+        "yg": "134",
+        "zg": "134",
+        "f": "8000",
+        "file": "",
+        "shapes": {
+            "0": {
+                "type": "circle",
+                "centre_x": "67",
+                "centre_y": "67",
+                "centre_z": "67",
+                "radius": "0",
+                "coefficient": "S"
+            },
+            "1": {
+                "type": "circle",
+                "x1": "",
+                "y1": "",
+                "z1": "",
+                "x2": "",
+                "y2": "",
+                "z2": "",
+                "coefficient": "R",
+                "centre_x": "67",
+                "centre_y": "67",
+                "centre_z": "81",
+                "radius": "0"
+            }
+        }
+    }
+}

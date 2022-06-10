@@ -159,14 +159,14 @@ if __name__ == '__main__':
         for shape in hulls:
             s_name = f"shape_{i}"
             shapes[s_name] = {
-                "coefficient": 0
+                "coefficient": 1
             }
 
             i1 = 0
             for triangle in shape:
-                pt0 = [triangle[0][0], triangle[0][1], triangle[0][2]]
-                pt1 = [triangle[1][0], triangle[1][1], triangle[1][2]]
-                pt2 = [triangle[2][0], triangle[2][1], triangle[2][2]]
+                pt0 = [triangle[0][0] + 2, triangle[0][1] + 2, triangle[0][2] + 2]
+                pt1 = [triangle[1][0] + 2, triangle[1][1] + 2, triangle[1][2] + 2]
+                pt2 = [triangle[2][0] + 2, triangle[2][1] + 2, triangle[2][2] + 2]
 
                 shapes[s_name][f'tri_{i1}'] = [pt0, pt1, pt2]
                 i1 += 1
@@ -174,10 +174,10 @@ if __name__ == '__main__':
             i += 1
 
         data = {
-            "xg": "",
-            "yg": "",
-            "zg": "",
-            "f": "",
+            "xg": "100",
+            "yg": "100",
+            "zg": "100",
+            "f": "8000",
             "file": "./dwm/plugin.dwm",
             "shapes": shapes
         }
@@ -189,9 +189,13 @@ if __name__ == '__main__':
         json_room = json.loads(''.join(args[2:]))
         shapes = json_room['shapes']
 
+        # conv = {"S", "R", "A": 0xa, "B": 0xb, "C": 0xc, "D", "E", "F", "G", "H", "I", "J",
+        #         "1": 0x1, "2": 0x2, "3": 0x3, "4": 0x4, "5": 0x5, "6": 0x6, "7": 0x7, "8": 0x8, "9": 0x9,
+        # "Z"}
+
         for k in shapes:
             triangles = []
-            coef = shapes[k]['coefficient']
+            coef = str(shapes[k]['coefficient'])
             for k1 in shapes[k]:
                 if k1 != 'coefficient':
                     triangles.append(shapes[k][k1])
@@ -217,10 +221,11 @@ if __name__ == '__main__':
                             room[4 * 4 + (x * yg * zg) + (y * zg) + z] = coef
 
             with open("result.dwm", 'wb') as f:
-                f.write(xg.to_bytes(2, 'big'))
-                f.write(yg.to_bytes(2, 'big'))
-                f.write(zg.to_bytes(2, 'big'))
-                f.write(int(json_room['f']).to_bytes(4, 'big'))
+                f.write(xg.to_bytes(4, 'big'))
+                f.write(yg.to_bytes(4, 'big'))
+                f.write(zg.to_bytes(4, 'big'))
+                f.write(int(json_room['f']).to_bytes(8, 'big'))
+                print('ROOM: ', ''.join(room))
                 f.write(''.join(room).encode('ASCII'))
 
             # strt = -2

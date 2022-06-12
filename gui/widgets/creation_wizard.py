@@ -109,7 +109,7 @@ class WizardWidget(QtWidgets.QWidget):
         to_send = str({"type": req_type, "data": data}).replace("\'", "\"")
         jo = json.loads(to_send)
 
-        f = open("room.txt", "w")
+        f = open("last_room.json", "w")
         f.write(json.dumps(jo, indent=4))
         f.close()
 

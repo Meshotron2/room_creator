@@ -27,8 +27,8 @@ class TextEditWLabel(WidgetWLabel):
 
     def get_data_conv(self, freq):
         value = self.text_box.text()
-        if value.isnumeric() and freq.isnumeric():
-            value = str(round((int(value) * int(freq)) / (344 * math.sqrt(3))))  # conversao para nós
+        # if value.isnumeric() and freq.isnumeric():
+        value = str(round((float(value) * int(freq)) / (344 * math.sqrt(3))))  # conversao para nós
         return self.replace_label(self.label.text()), value
 
     def get_data(self):

@@ -52,7 +52,6 @@ class StatusPageWidget(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout(self)
 
         for node in nodes:
-            print("YEET", processes[str(node['nodeId'])])
             self.layout.addWidget(NodeWidget(node, processes[str(node['nodeId'])]))
 
 

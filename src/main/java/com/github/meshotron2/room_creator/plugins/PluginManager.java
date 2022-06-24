@@ -1,5 +1,6 @@
 package com.github.meshotron2.room_creator.plugins;
 
+import com.github.meshotron2.room_creator.communication.SendFileClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -116,6 +117,9 @@ public class PluginManager {
             buffer.append('\n');
 //            prevLine = line;
         }
+
+        final String folder = plugin.substring(0, plugin.lastIndexOf('/') + 1);
+        SendFileClient.send(folder+"result.dwm");
 
         return buffer.toString();
     }

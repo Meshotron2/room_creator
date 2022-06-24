@@ -11,9 +11,11 @@ import java.net.Socket;
  */
 public interface SendFileClient {
 
-//    static void main(String[] args) {
-//        send("final_test.dwm");
-//    }
+    static void main(String[] args) {
+        String plugin = "plugins/folder/file.txt";
+        final String folder = plugin.substring(0, plugin.lastIndexOf('/')+1);
+        System.out.println(folder+"result.dwm");
+    }
 
     /**
      * Sends a file
